@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, HttpCode, Get, Param } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './booking.dto';
 import { Booking } from './entities';
@@ -12,4 +12,9 @@ export class BookingController {
   async createBooking(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
     return this.bookingService.createBooking(createBookingDto);
   }
+
+  // @Get(":id")
+  // async getBookingFareDetails(@Param('id') id: number): Promise<any> {
+  //   return await this.bookingService.getBookingById(id);
+  // }
 }

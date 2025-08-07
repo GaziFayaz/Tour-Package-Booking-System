@@ -53,6 +53,14 @@ export class Booking {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   totalAmount: number;
 
+  // total addon amount
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  totalAddonAmount: number;
+
+  // discount amount
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  discountAmount: number;
+
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   paidAmount: number;
 

@@ -29,7 +29,7 @@ export class BookingService {
   ) {}
 
   async createBooking(createBookingDto: CreateBookingDto): Promise<Booking> {
-    const { packageId, slotId, concernPerson, passengers, specialInstructions, notes } = createBookingDto;
+    const { packageId, slotId, concernPerson, passengers, specialInstructions, notes, discountAmount } = createBookingDto;
 
     // Validate package exists
     const packageEntity = await this.packageRepository.findOne({ where: { id: packageId } });
@@ -53,6 +53,7 @@ export class BookingService {
 
     // Calculate total amount based on passengers and their addons
     let totalAmount = 0;
+    let totalAddonAmount = 0
     for (const passenger of passengers) {
       // Add base fare based on passenger type
       switch (passenger.type) {
@@ -73,6 +74,7 @@ export class BookingService {
           where: { packageId, slotId }
         });
         totalAmount += adultAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
+        totalAddonAmount += adultAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
       }
 
       if (passenger.childAddonIds && passenger.childAddonIds.length > 0) {
@@ -80,6 +82,7 @@ export class BookingService {
           where: { packageId, slotId }
         });
         totalAmount += childAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
+        totalAddonAmount += childAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
       }
 
       if (passenger.infantAddonIds && passenger.infantAddonIds.length > 0) {
@@ -87,6 +90,7 @@ export class BookingService {
           where: { packageId, slotId }
         });
         totalAmount += infantAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
+        totalAddonAmount += infantAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
       }
     }
 
@@ -123,6 +127,8 @@ export class BookingService {
       slotId,
       concernPersonId,
       totalAmount,
+      totalAddonAmount,
+      discountAmount,
       pendingAmount: totalAmount,
       specialInstructions,
       notes
@@ -133,7 +139,7 @@ export class BookingService {
     // Create passengers
     for (const passengerData of passengers) {
       const passenger = this.passengerRepository.create({
-        bookingId: savedBooking.id,
+        bookingId: (savedBooking as Booking).id,
         email: passengerData.email,
         phone: passengerData.phone,
         type: passengerData.type,
@@ -198,4 +204,7 @@ export class BookingService {
 
     return bookingWithRelations;
   }
+
+  // async getBookingById(id: number): Promise<any> {
+    
 }
