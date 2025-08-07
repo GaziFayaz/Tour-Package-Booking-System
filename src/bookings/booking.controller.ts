@@ -13,8 +13,8 @@ export class BookingController {
     return this.bookingService.createBooking(createBookingDto);
   }
 
-  // @Get(":id")
-  // async getBookingFareDetails(@Param('id') id: number): Promise<any> {
-  //   return await this.bookingService.getBookingById(id);
-  // }
+  @Get(":id")
+  async getBookingFareDetails(@Param('id') id: number): Promise<any> {
+    return await this.bookingService.getBookingFareDetails(id);
+  }
 }

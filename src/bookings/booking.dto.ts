@@ -114,6 +114,10 @@ export class CreateBookingDto {
   @IsNumber()
   discountAmount?: number;
 
+  @IsOptional()
+  @IsString()
+  discountRemarks?: string;
+
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => CreateConcernPersonDto)

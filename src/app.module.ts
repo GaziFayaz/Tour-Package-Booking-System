@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { PackagesModule } from './packages/packages.module';
 import { BookingModule } from './bookings/booking.module';
 
@@ -27,7 +26,6 @@ import { BookingModule } from './bookings/booking.module';
         synchronize: configService.get('NODE_ENV') === 'development',
       }),
     }),
-    UsersModule,
     PackagesModule,
     BookingModule,
   ],

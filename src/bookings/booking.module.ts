@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
 import { Booking, BookingConcernPerson, BookingPassenger, BookingPayment } from './entities';
-import { AdultAddon, ChildAddon, InfantAddon, Package, PackageFare, Slot } from 'src/packages/entities';
+import { AdultAddon, ChildAddon, InfantAddon, Package, PackageFare, Slot, InstallmentPlan, AdultInstallmentValue, ChildInstallmentValue, InfantInstallmentValue } from 'src/packages/entities';
 
 @Module({
   imports: [
@@ -17,7 +17,11 @@ import { AdultAddon, ChildAddon, InfantAddon, Package, PackageFare, Slot } from 
       PackageFare,
       AdultAddon,
       ChildAddon,
-      InfantAddon
+      InfantAddon,
+      InstallmentPlan,
+      AdultInstallmentValue,
+      ChildInstallmentValue,
+      InfantInstallmentValue
     ])
   ],
   controllers: [BookingController],

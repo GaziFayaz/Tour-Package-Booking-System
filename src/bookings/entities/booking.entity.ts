@@ -57,9 +57,11 @@ export class Booking {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   totalAddonAmount: number;
 
-  // discount amount
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   discountAmount: number;
+
+  @Column({ type: 'text', nullable: true })
+  discountRemarks: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   paidAmount: number;
