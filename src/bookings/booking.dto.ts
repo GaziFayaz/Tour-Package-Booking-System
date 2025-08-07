@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString, IsOptional, IsEmail, IsPhoneNumber, IsArray, ValidateNested, IsEnum, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PassengerType, Gender } from './booking.entity';
+import { Gender, PassengerType } from './entities';
 
 export class CreateConcernPersonDto {
   @IsNotEmpty()

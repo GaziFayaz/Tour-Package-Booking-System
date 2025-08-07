@@ -37,34 +37,60 @@ export interface UpdatePackageFareDto {
   infantFare?: number;
 }
 
-// Installment DTOs (shared structure)
-export interface CreateInstallmentDto {
+// Installment Plan DTOs
+export interface CreateInstallmentPlanDto {
   packageId: number;
   slotId: number;
-  firstInstallment: number;
-  firstInstallmentDueDate: Date;
-  secondInstallment: number;
-  secondInstallmentDueDate: Date;
-  thirdInstallment: number;
-  thirdInstallmentDueDate: Date;
+  firstInstallmentDays: number;
+  secondInstallmentDays: number;
+  thirdInstallmentDays: number;
 }
 
-export interface UpdateInstallmentDto {
-  firstInstallment?: number;
-  firstInstallmentDueDate?: Date;
-  secondInstallment?: number;
-  secondInstallmentDueDate?: Date;
-  thirdInstallment?: number;
-  thirdInstallmentDueDate?: Date;
+export interface UpdateInstallmentPlanDto {
+  firstInstallmentDays?: number;
+  secondInstallmentDays?: number;
+  thirdInstallmentDays?: number;
 }
 
-export type CreateAdultInstallmentDto = CreateInstallmentDto;
-export type CreateChildInstallmentDto = CreateInstallmentDto;
-export type CreateInfantInstallmentDto = CreateInstallmentDto;
+// Installment Value DTOs
+export interface CreateAdultInstallmentValueDto {
+  installmentPlanId: number;
+  firstInstallmentAmount: number;
+  secondInstallmentAmount: number;
+  thirdInstallmentAmount: number;
+}
 
-export type UpdateAdultInstallmentDto = UpdateInstallmentDto;
-export type UpdateChildInstallmentDto = UpdateInstallmentDto;
-export type UpdateInfantInstallmentDto = UpdateInstallmentDto;
+export interface UpdateAdultInstallmentValueDto {
+  firstInstallmentAmount?: number;
+  secondInstallmentAmount?: number;
+  thirdInstallmentAmount?: number;
+}
+
+export interface CreateChildInstallmentValueDto {
+  installmentPlanId: number;
+  firstInstallmentAmount: number;
+  secondInstallmentAmount: number;
+  thirdInstallmentAmount: number;
+}
+
+export interface UpdateChildInstallmentValueDto {
+  firstInstallmentAmount?: number;
+  secondInstallmentAmount?: number;
+  thirdInstallmentAmount?: number;
+}
+
+export interface CreateInfantInstallmentValueDto {
+  installmentPlanId: number;
+  firstInstallmentAmount: number;
+  secondInstallmentAmount: number;
+  thirdInstallmentAmount: number;
+}
+
+export interface UpdateInfantInstallmentValueDto {
+  firstInstallmentAmount?: number;
+  secondInstallmentAmount?: number;
+  thirdInstallmentAmount?: number;
+}
 
 // Addon DTOs (shared structure)
 export interface CreateAddonDto {

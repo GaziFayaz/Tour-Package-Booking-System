@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
-import { Booking, BookingConcernPerson, BookingPassenger, BookingPayment } from './booking.entity';
-import { Package, Slot, PackageFare, AdultAddon, ChildAddon, InfantAddon } from '../packages/packages.entity';
+import { Booking, BookingConcernPerson, BookingPassenger, BookingPayment } from './entities';
+import { AdultAddon, ChildAddon, InfantAddon, Package, PackageFare, Slot } from 'src/packages/entities';
 
 @Module({
   imports: [

@@ -1,3 +1,4 @@
+import { AdultAddon, ChildAddon, InfantAddon } from 'src/packages/entities';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,7 +10,6 @@ import {
   JoinTable,
   JoinColumn,
 } from 'typeorm';
-import { AdultAddon, ChildAddon, InfantAddon } from '../../packages/packages.entity';
 
 export enum PassengerType {
   ADULT = 'adult',

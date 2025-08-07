@@ -1,3 +1,4 @@
+import { Package, Slot } from 'src/packages/entities';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,7 +10,6 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Package, Slot } from '../../packages/packages.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',

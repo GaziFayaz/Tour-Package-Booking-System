@@ -17,12 +17,14 @@ import type {
   UpdateSlotDto,
   CreatePackageFareDto,
   UpdatePackageFareDto,
-  CreateAdultInstallmentDto,
-  UpdateAdultInstallmentDto,
-  CreateChildInstallmentDto,
-  UpdateChildInstallmentDto,
-  CreateInfantInstallmentDto,
-  UpdateInfantInstallmentDto,
+  CreateInstallmentPlanDto,
+  UpdateInstallmentPlanDto,
+  CreateAdultInstallmentValueDto,
+  UpdateAdultInstallmentValueDto,
+  CreateChildInstallmentValueDto,
+  UpdateChildInstallmentValueDto,
+  CreateInfantInstallmentValueDto,
+  UpdateInfantInstallmentValueDto,
   CreateAdultAddonDto,
   UpdateAdultAddonDto,
   CreateChildAddonDto,
@@ -174,150 +176,171 @@ export class PackageFaresController {
   }
 }
 
-@Controller('adult-installments')
-export class AdultInstallmentsController {
+@Controller('installment-plans')
+export class InstallmentPlansController {
   constructor(private readonly packagesService: PackagesService) {}
 
-  // =================== ADULT INSTALLMENT ENDPOINTS ===================
+  // =================== INSTALLMENT PLAN ENDPOINTS ===================
   @Post()
-  createAdultInstallment(@Body() createAdultInstallmentDto: CreateAdultInstallmentDto) {
-    return this.packagesService.createAdultInstallment(createAdultInstallmentDto);
+  createInstallmentPlan(@Body() createInstallmentPlanDto: CreateInstallmentPlanDto) {
+    return this.packagesService.createInstallmentPlan(createInstallmentPlanDto);
   }
 
   @Get()
-  findAllAdultInstallments() {
-    return this.packagesService.findAllAdultInstallments();
+  findAllInstallmentPlans() {
+    return this.packagesService.findAllInstallmentPlans();
   }
 
-  @Get(':packageId/:slotId')
-  async findAdultInstallmentById(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
-  ) {
-    const installment = await this.packagesService.findAdultInstallmentById(packageId, slotId);
-    if (!installment) {
-      throw new NotFoundException(`Adult installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+  @Get(':id')
+  async findInstallmentPlanById(@Param('id', ParseIntPipe) id: number) {
+    const plan = await this.packagesService.findInstallmentPlanById(id);
+    if (!plan) {
+      throw new NotFoundException(`Installment plan with ID ${id} not found`);
     }
-    return installment;
+    return plan;
   }
 
-  @Patch(':packageId/:slotId')
-  async updateAdultInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number,
-    @Body() updateAdultInstallmentDto: UpdateAdultInstallmentDto
+  @Patch(':id')
+  async updateInstallmentPlan(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateInstallmentPlanDto: UpdateInstallmentPlanDto
   ) {
-    const installment = await this.packagesService.updateAdultInstallment(packageId, slotId, updateAdultInstallmentDto);
-    if (!installment) {
-      throw new NotFoundException(`Adult installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+    const plan = await this.packagesService.updateInstallmentPlan(id, updateInstallmentPlanDto);
+    if (!plan) {
+      throw new NotFoundException(`Installment plan with ID ${id} not found`);
     }
-    return installment;
+    return plan;
   }
 
-  @Delete(':packageId/:slotId')
-  removeAdultInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
-  ) {
-    return this.packagesService.removeAdultInstallment(packageId, slotId);
+  @Delete(':id')
+  removeInstallmentPlan(@Param('id', ParseIntPipe) id: number) {
+    return this.packagesService.removeInstallmentPlan(id);
   }
 }
 
-@Controller('child-installments')
-export class ChildInstallmentsController {
+@Controller('adult-installment-values')
+export class AdultInstallmentValuesController {
   constructor(private readonly packagesService: PackagesService) {}
 
-  // =================== CHILD INSTALLMENT ENDPOINTS ===================
+  // =================== ADULT INSTALLMENT VALUE ENDPOINTS ===================
   @Post()
-  createChildInstallment(@Body() createChildInstallmentDto: CreateChildInstallmentDto) {
-    return this.packagesService.createChildInstallment(createChildInstallmentDto);
+  createAdultInstallmentValue(@Body() createAdultInstallmentValueDto: CreateAdultInstallmentValueDto) {
+    return this.packagesService.createAdultInstallmentValue(createAdultInstallmentValueDto);
   }
 
   @Get()
-  findAllChildInstallments() {
-    return this.packagesService.findAllChildInstallments();
+  findAllAdultInstallmentValues() {
+    return this.packagesService.findAllAdultInstallmentValues();
   }
 
-  @Get(':packageId/:slotId')
-  async findChildInstallmentById(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
-  ) {
-    const installment = await this.packagesService.findChildInstallmentById(packageId, slotId);
-    if (!installment) {
-      throw new NotFoundException(`Child installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+  @Get(':id')
+  async findAdultInstallmentValueById(@Param('id', ParseIntPipe) id: number) {
+    const value = await this.packagesService.findAdultInstallmentValueById(id);
+    if (!value) {
+      throw new NotFoundException(`Adult installment value with ID ${id} not found`);
     }
-    return installment;
+    return value;
   }
 
-  @Patch(':packageId/:slotId')
-  async updateChildInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number,
-    @Body() updateChildInstallmentDto: UpdateChildInstallmentDto
+  @Patch(':id')
+  async updateAdultInstallmentValue(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateAdultInstallmentValueDto: UpdateAdultInstallmentValueDto
   ) {
-    const installment = await this.packagesService.updateChildInstallment(packageId, slotId, updateChildInstallmentDto);
-    if (!installment) {
-      throw new NotFoundException(`Child installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+    const value = await this.packagesService.updateAdultInstallmentValue(id, updateAdultInstallmentValueDto);
+    if (!value) {
+      throw new NotFoundException(`Adult installment value with ID ${id} not found`);
     }
-    return installment;
+    return value;
   }
 
-  @Delete(':packageId/:slotId')
-  removeChildInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
-  ) {
-    return this.packagesService.removeChildInstallment(packageId, slotId);
+  @Delete(':id')
+  removeAdultInstallmentValue(@Param('id', ParseIntPipe) id: number) {
+    return this.packagesService.removeAdultInstallmentValue(id);
   }
 }
 
-@Controller('infant-installments')
-export class InfantInstallmentsController {
+@Controller('child-installment-values')
+export class ChildInstallmentValuesController {
   constructor(private readonly packagesService: PackagesService) {}
 
-  // =================== INFANT INSTALLMENT ENDPOINTS ===================
+  // =================== CHILD INSTALLMENT VALUE ENDPOINTS ===================
   @Post()
-  createInfantInstallment(@Body() createInfantInstallmentDto: CreateInfantInstallmentDto) {
-    return this.packagesService.createInfantInstallment(createInfantInstallmentDto);
+  createChildInstallmentValue(@Body() createChildInstallmentValueDto: CreateChildInstallmentValueDto) {
+    return this.packagesService.createChildInstallmentValue(createChildInstallmentValueDto);
   }
 
   @Get()
-  findAllInfantInstallments() {
-    return this.packagesService.findAllInfantInstallments();
+  findAllChildInstallmentValues() {
+    return this.packagesService.findAllChildInstallmentValues();
   }
 
-  @Get(':packageId/:slotId')
-  async findInfantInstallmentById(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
-  ) {
-    const installment = await this.packagesService.findInfantInstallmentById(packageId, slotId);
-    if (!installment) {
-      throw new NotFoundException(`Infant installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+  @Get(':id')
+  async findChildInstallmentValueById(@Param('id', ParseIntPipe) id: number) {
+    const value = await this.packagesService.findChildInstallmentValueById(id);
+    if (!value) {
+      throw new NotFoundException(`Child installment value with ID ${id} not found`);
     }
-    return installment;
+    return value;
   }
 
-  @Patch(':packageId/:slotId')
-  async updateInfantInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number,
-    @Body() updateInfantInstallmentDto: UpdateInfantInstallmentDto
+  @Patch(':id')
+  async updateChildInstallmentValue(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateChildInstallmentValueDto: UpdateChildInstallmentValueDto
   ) {
-    const installment = await this.packagesService.updateInfantInstallment(packageId, slotId, updateInfantInstallmentDto);
-    if (!installment) {
-      throw new NotFoundException(`Infant installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+    const value = await this.packagesService.updateChildInstallmentValue(id, updateChildInstallmentValueDto);
+    if (!value) {
+      throw new NotFoundException(`Child installment value with ID ${id} not found`);
     }
-    return installment;
+    return value;
   }
 
-  @Delete(':packageId/:slotId')
-  removeInfantInstallment(
-    @Param('packageId', ParseIntPipe) packageId: number,
-    @Param('slotId', ParseIntPipe) slotId: number
+  @Delete(':id')
+  removeChildInstallmentValue(@Param('id', ParseIntPipe) id: number) {
+    return this.packagesService.removeChildInstallmentValue(id);
+  }
+}
+
+@Controller('infant-installment-values')
+export class InfantInstallmentValuesController {
+  constructor(private readonly packagesService: PackagesService) {}
+
+  // =================== INFANT INSTALLMENT VALUE ENDPOINTS ===================
+  @Post()
+  createInfantInstallmentValue(@Body() createInfantInstallmentValueDto: CreateInfantInstallmentValueDto) {
+    return this.packagesService.createInfantInstallmentValue(createInfantInstallmentValueDto);
+  }
+
+  @Get()
+  findAllInfantInstallmentValues() {
+    return this.packagesService.findAllInfantInstallmentValues();
+  }
+
+  @Get(':id')
+  async findInfantInstallmentValueById(@Param('id', ParseIntPipe) id: number) {
+    const value = await this.packagesService.findInfantInstallmentValueById(id);
+    if (!value) {
+      throw new NotFoundException(`Infant installment value with ID ${id} not found`);
+    }
+    return value;
+  }
+
+  @Patch(':id')
+  async updateInfantInstallmentValue(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateInfantInstallmentValueDto: UpdateInfantInstallmentValueDto
   ) {
-    return this.packagesService.removeInfantInstallment(packageId, slotId);
+    const value = await this.packagesService.updateInfantInstallmentValue(id, updateInfantInstallmentValueDto);
+    if (!value) {
+      throw new NotFoundException(`Infant installment value with ID ${id} not found`);
+    }
+    return value;
+  }
+
+  @Delete(':id')
+  removeInfantInstallmentValue(@Param('id', ParseIntPipe) id: number) {
+    return this.packagesService.removeInfantInstallmentValue(id);
   }
 }
 

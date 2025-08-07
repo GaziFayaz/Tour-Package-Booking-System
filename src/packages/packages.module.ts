@@ -4,21 +4,23 @@ import {
   Package, 
   Slot, 
   PackageFare, 
-  AdultInstallment, 
-  ChildInstallment, 
-  InfantInstallment,
+  InstallmentPlan,
+  AdultInstallmentValue,
+  ChildInstallmentValue,
+  InfantInstallmentValue,
   AdultAddon,
   ChildAddon,
   InfantAddon
-} from './packages.entity';
+} from './entities';
 import { PackagesService } from './packages.service';
 import { 
   PackagesController, 
   SlotsController, 
   PackageFaresController, 
-  AdultInstallmentsController, 
-  ChildInstallmentsController, 
-  InfantInstallmentsController,
+  InstallmentPlansController,
+  AdultInstallmentValuesController,
+  ChildInstallmentValuesController,
+  InfantInstallmentValuesController,
   AdultAddonsController,
   ChildAddonsController,
   InfantAddonsController
@@ -30,9 +32,10 @@ import {
       Package,
       Slot,
       PackageFare,
-      AdultInstallment,
-      ChildInstallment,
-      InfantInstallment,
+      InstallmentPlan,
+      AdultInstallmentValue,
+      ChildInstallmentValue,
+      InfantInstallmentValue,
       AdultAddon,
       ChildAddon,
       InfantAddon
@@ -42,9 +45,10 @@ import {
     PackagesController,
     SlotsController,
     PackageFaresController,
-    AdultInstallmentsController,
-    ChildInstallmentsController,
-    InfantInstallmentsController,
+    InstallmentPlansController,
+    AdultInstallmentValuesController,
+    ChildInstallmentValuesController,
+    InfantInstallmentValuesController,
     AdultAddonsController,
     ChildAddonsController,
     InfantAddonsController

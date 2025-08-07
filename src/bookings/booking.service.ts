@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Package, Slot, PackageFare, AdultAddon, ChildAddon, InfantAddon } from '../packages/packages.entity';
 import { CreateBookingDto } from './booking.dto';
 import { Booking, BookingConcernPerson, BookingPassenger, PassengerType } from './entities';
+import { AdultAddon, ChildAddon, InfantAddon, Package, PackageFare, Slot } from 'src/packages/entities';
 
 @Injectable()
 export class BookingService {

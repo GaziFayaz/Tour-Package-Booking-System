@@ -5,13 +5,14 @@ import {
   Package, 
   Slot, 
   PackageFare, 
-  AdultInstallment, 
-  ChildInstallment, 
-  InfantInstallment,
+  InstallmentPlan,
+  AdultInstallmentValue,
+  ChildInstallmentValue,
+  InfantInstallmentValue,
   AdultAddon,
   ChildAddon,
   InfantAddon
-} from './packages.entity';
+} from './entities';
 import type {
   CreatePackageDto,
   UpdatePackageDto,
@@ -19,12 +20,14 @@ import type {
   UpdateSlotDto,
   CreatePackageFareDto,
   UpdatePackageFareDto,
-  CreateAdultInstallmentDto,
-  UpdateAdultInstallmentDto,
-  CreateChildInstallmentDto,
-  UpdateChildInstallmentDto,
-  CreateInfantInstallmentDto,
-  UpdateInfantInstallmentDto,
+  CreateInstallmentPlanDto,
+  UpdateInstallmentPlanDto,
+  CreateAdultInstallmentValueDto,
+  UpdateAdultInstallmentValueDto,
+  CreateChildInstallmentValueDto,
+  UpdateChildInstallmentValueDto,
+  CreateInfantInstallmentValueDto,
+  UpdateInfantInstallmentValueDto,
   CreateAdultAddonDto,
   UpdateAdultAddonDto,
   CreateChildAddonDto,
@@ -43,12 +46,14 @@ export class PackagesService {
     private readonly slotRepository: Repository<Slot>,
     @InjectRepository(PackageFare)
     private readonly packageFareRepository: Repository<PackageFare>,
-    @InjectRepository(AdultInstallment)
-    private readonly adultInstallmentRepository: Repository<AdultInstallment>,
-    @InjectRepository(ChildInstallment)
-    private readonly childInstallmentRepository: Repository<ChildInstallment>,
-    @InjectRepository(InfantInstallment)
-    private readonly infantInstallmentRepository: Repository<InfantInstallment>,
+    @InjectRepository(InstallmentPlan)
+    private readonly installmentPlanRepository: Repository<InstallmentPlan>,
+    @InjectRepository(AdultInstallmentValue)
+    private readonly adultInstallmentValueRepository: Repository<AdultInstallmentValue>,
+    @InjectRepository(ChildInstallmentValue)
+    private readonly childInstallmentValueRepository: Repository<ChildInstallmentValue>,
+    @InjectRepository(InfantInstallmentValue)
+    private readonly infantInstallmentValueRepository: Repository<InfantInstallmentValue>,
     @InjectRepository(AdultAddon)
     private readonly adultAddonRepository: Repository<AdultAddon>,
     @InjectRepository(ChildAddon)
@@ -65,14 +70,14 @@ export class PackagesService {
 
   async findAllPackages(): Promise<Package[]> {
     return this.packageRepository.find({
-      relations: ['fares', 'adultInstallments', 'childInstallments', 'infantInstallments', 'adultAddons', 'childAddons', 'infantAddons']
+      relations: ['fares', 'adultAddons', 'childAddons', 'infantAddons']
     });
   }
 
   async findPackageById(id: number): Promise<Package | null> {
     return this.packageRepository.findOne({
       where: { id },
-      relations: ['fares', 'adultInstallments', 'childInstallments', 'infantInstallments', 'adultAddons', 'childAddons', 'infantAddons']
+      relations: ['fares', 'adultAddons', 'childAddons', 'infantAddons']
     });
   }
 
@@ -96,14 +101,14 @@ export class PackagesService {
 
   async findAllSlots(): Promise<Slot[]> {
     return this.slotRepository.find({
-      relations: ['fares', 'adultInstallments', 'childInstallments', 'infantInstallments', 'adultAddons', 'childAddons', 'infantAddons']
+      relations: ['fares', 'adultAddons', 'childAddons', 'infantAddons']
     });
   }
 
   async findSlotById(id: number): Promise<Slot | null> {
     return this.slotRepository.findOne({
       where: { id },
-      relations: ['fares', 'adultInstallments', 'childInstallments', 'infantInstallments', 'adultAddons', 'childAddons', 'infantAddons']
+      relations: ['fares', 'adultAddons', 'childAddons', 'infantAddons']
     });
   }
 
@@ -127,14 +132,14 @@ export class PackagesService {
 
   async findAllPackageFares(): Promise<PackageFare[]> {
     return this.packageFareRepository.find({
-      relations: ['package', 'slot']
+      relations: ['package', 'slot', 'installmentPlan']
     });
   }
 
   async findPackageFareById(packageId: number, slotId: number): Promise<PackageFare | null> {
     return this.packageFareRepository.findOne({
       where: { packageId, slotId },
-      relations: ['package', 'slot']
+      relations: ['package', 'slot', 'installmentPlan']
     });
   }
 
@@ -154,108 +159,134 @@ export class PackagesService {
     }
   }
 
-  // =================== ADULT INSTALLMENT METHODS ===================
-  async createAdultInstallment(createAdultInstallmentDto: CreateAdultInstallmentDto): Promise<AdultInstallment> {
-    const installment = this.adultInstallmentRepository.create(createAdultInstallmentDto);
-    return this.adultInstallmentRepository.save(installment);
+  // =================== INSTALLMENT PLAN METHODS ===================
+  async createInstallmentPlan(createInstallmentPlanDto: CreateInstallmentPlanDto): Promise<InstallmentPlan> {
+    const plan = this.installmentPlanRepository.create(createInstallmentPlanDto);
+    return this.installmentPlanRepository.save(plan);
   }
 
-  async findAllAdultInstallments(): Promise<AdultInstallment[]> {
-    return this.adultInstallmentRepository.find({
-      relations: ['package', 'slot']
+  async findAllInstallmentPlans(): Promise<InstallmentPlan[]> {
+    return this.installmentPlanRepository.find({
+      relations: ['fare', 'adultValues', 'childValues', 'infantValues']
     });
   }
 
-  async findAdultInstallmentById(packageId: number, slotId: number): Promise<AdultInstallment | null> {
-    return this.adultInstallmentRepository.findOne({
+  async findInstallmentPlanById(id: number): Promise<InstallmentPlan | null> {
+    return this.installmentPlanRepository.findOne({
+      where: { id },
+      relations: ['fare', 'adultValues', 'childValues', 'infantValues']
+    });
+  }
+
+  async findInstallmentPlanByPackageFare(packageId: number, slotId: number): Promise<InstallmentPlan | null> {
+    return this.installmentPlanRepository.findOne({
       where: { packageId, slotId },
-      relations: ['package', 'slot']
+      relations: ['fare', 'adultValues', 'childValues', 'infantValues']
     });
   }
 
-  async updateAdultInstallment(
-    packageId: number,
-    slotId: number,
-    updateAdultInstallmentDto: UpdateAdultInstallmentDto
-  ): Promise<AdultInstallment | null> {
-    await this.adultInstallmentRepository.update({ packageId, slotId }, updateAdultInstallmentDto);
-    return this.findAdultInstallmentById(packageId, slotId);
+  async updateInstallmentPlan(id: number, updateInstallmentPlanDto: UpdateInstallmentPlanDto): Promise<InstallmentPlan | null> {
+    await this.installmentPlanRepository.update(id, updateInstallmentPlanDto);
+    return this.findInstallmentPlanById(id);
   }
 
-  async removeAdultInstallment(packageId: number, slotId: number): Promise<void> {
-    const result = await this.adultInstallmentRepository.delete({ packageId, slotId });
+  async removeInstallmentPlan(id: number): Promise<void> {
+    const result = await this.installmentPlanRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`Adult installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+      throw new NotFoundException(`Installment plan with ID ${id} not found`);
     }
   }
 
-  // =================== CHILD INSTALLMENT METHODS ===================
-  async createChildInstallment(createChildInstallmentDto: CreateChildInstallmentDto): Promise<ChildInstallment> {
-    const installment = this.childInstallmentRepository.create(createChildInstallmentDto);
-    return this.childInstallmentRepository.save(installment);
+  // =================== ADULT INSTALLMENT VALUE METHODS ===================
+  async createAdultInstallmentValue(createAdultInstallmentValueDto: CreateAdultInstallmentValueDto): Promise<AdultInstallmentValue> {
+    const value = this.adultInstallmentValueRepository.create(createAdultInstallmentValueDto);
+    return this.adultInstallmentValueRepository.save(value);
   }
 
-  async findAllChildInstallments(): Promise<ChildInstallment[]> {
-    return this.childInstallmentRepository.find({
-      relations: ['package', 'slot']
+  async findAllAdultInstallmentValues(): Promise<AdultInstallmentValue[]> {
+    return this.adultInstallmentValueRepository.find({
+      relations: ['installmentPlan']
     });
   }
 
-  async findChildInstallmentById(packageId: number, slotId: number): Promise<ChildInstallment | null> {
-    return this.childInstallmentRepository.findOne({
-      where: { packageId, slotId },
-      relations: ['package', 'slot']
+  async findAdultInstallmentValueById(id: number): Promise<AdultInstallmentValue | null> {
+    return this.adultInstallmentValueRepository.findOne({
+      where: { id },
+      relations: ['installmentPlan']
     });
   }
 
-  async updateChildInstallment(
-    packageId: number,
-    slotId: number,
-    updateChildInstallmentDto: UpdateChildInstallmentDto
-  ): Promise<ChildInstallment | null> {
-    await this.childInstallmentRepository.update({ packageId, slotId }, updateChildInstallmentDto);
-    return this.findChildInstallmentById(packageId, slotId);
+  async updateAdultInstallmentValue(id: number, updateAdultInstallmentValueDto: UpdateAdultInstallmentValueDto): Promise<AdultInstallmentValue | null> {
+    await this.adultInstallmentValueRepository.update(id, updateAdultInstallmentValueDto);
+    return this.findAdultInstallmentValueById(id);
   }
 
-  async removeChildInstallment(packageId: number, slotId: number): Promise<void> {
-    const result = await this.childInstallmentRepository.delete({ packageId, slotId });
+  async removeAdultInstallmentValue(id: number): Promise<void> {
+    const result = await this.adultInstallmentValueRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`Child installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+      throw new NotFoundException(`Adult installment value with ID ${id} not found`);
     }
   }
 
-  // =================== INFANT INSTALLMENT METHODS ===================
-  async createInfantInstallment(createInfantInstallmentDto: CreateInfantInstallmentDto): Promise<InfantInstallment> {
-    const installment = this.infantInstallmentRepository.create(createInfantInstallmentDto);
-    return this.infantInstallmentRepository.save(installment);
+  // =================== CHILD INSTALLMENT VALUE METHODS ===================
+  async createChildInstallmentValue(createChildInstallmentValueDto: CreateChildInstallmentValueDto): Promise<ChildInstallmentValue> {
+    const value = this.childInstallmentValueRepository.create(createChildInstallmentValueDto);
+    return this.childInstallmentValueRepository.save(value);
   }
 
-  async findAllInfantInstallments(): Promise<InfantInstallment[]> {
-    return this.infantInstallmentRepository.find({
-      relations: ['package', 'slot']
+  async findAllChildInstallmentValues(): Promise<ChildInstallmentValue[]> {
+    return this.childInstallmentValueRepository.find({
+      relations: ['installmentPlan']
     });
   }
 
-  async findInfantInstallmentById(packageId: number, slotId: number): Promise<InfantInstallment | null> {
-    return this.infantInstallmentRepository.findOne({
-      where: { packageId, slotId },
-      relations: ['package', 'slot']
+  async findChildInstallmentValueById(id: number): Promise<ChildInstallmentValue | null> {
+    return this.childInstallmentValueRepository.findOne({
+      where: { id },
+      relations: ['installmentPlan']
     });
   }
 
-  async updateInfantInstallment(
-    packageId: number,
-    slotId: number,
-    updateInfantInstallmentDto: UpdateInfantInstallmentDto
-  ): Promise<InfantInstallment | null> {
-    await this.infantInstallmentRepository.update({ packageId, slotId }, updateInfantInstallmentDto);
-    return this.findInfantInstallmentById(packageId, slotId);
+  async updateChildInstallmentValue(id: number, updateChildInstallmentValueDto: UpdateChildInstallmentValueDto): Promise<ChildInstallmentValue | null> {
+    await this.childInstallmentValueRepository.update(id, updateChildInstallmentValueDto);
+    return this.findChildInstallmentValueById(id);
   }
 
-  async removeInfantInstallment(packageId: number, slotId: number): Promise<void> {
-    const result = await this.infantInstallmentRepository.delete({ packageId, slotId });
+  async removeChildInstallmentValue(id: number): Promise<void> {
+    const result = await this.childInstallmentValueRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`Infant installment with Package ID ${packageId} and Slot ID ${slotId} not found`);
+      throw new NotFoundException(`Child installment value with ID ${id} not found`);
+    }
+  }
+
+  // =================== INFANT INSTALLMENT VALUE METHODS ===================
+  async createInfantInstallmentValue(createInfantInstallmentValueDto: CreateInfantInstallmentValueDto): Promise<InfantInstallmentValue> {
+    const value = this.infantInstallmentValueRepository.create(createInfantInstallmentValueDto);
+    return this.infantInstallmentValueRepository.save(value);
+  }
+
+  async findAllInfantInstallmentValues(): Promise<InfantInstallmentValue[]> {
+    return this.infantInstallmentValueRepository.find({
+      relations: ['installmentPlan']
+    });
+  }
+
+  async findInfantInstallmentValueById(id: number): Promise<InfantInstallmentValue | null> {
+    return this.infantInstallmentValueRepository.findOne({
+      where: { id },
+      relations: ['installmentPlan']
+    });
+  }
+
+  async updateInfantInstallmentValue(id: number, updateInfantInstallmentValueDto: UpdateInfantInstallmentValueDto): Promise<InfantInstallmentValue | null> {
+    await this.infantInstallmentValueRepository.update(id, updateInfantInstallmentValueDto);
+    return this.findInfantInstallmentValueById(id);
+  }
+
+  async removeInfantInstallmentValue(id: number): Promise<void> {
+    const result = await this.infantInstallmentValueRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Infant installment value with ID ${id} not found`);
     }
   }
 
@@ -376,21 +407,105 @@ export class PackagesService {
       );
     }
 
-    // Get package fare
+    // Get package fare with installment plan
     const packageFare = await this.packageFareRepository.findOne({
-      where: { packageId, slotId }
+      where: { packageId, slotId },
+      relations: ['installmentPlan']
     });
 
     if (!packageFare) {
       throw new NotFoundException(`No fare found for Package ID ${packageId} and Slot ID ${slotId}`);
     }
 
-    // Get all installments
-    const [adultInstallment, childInstallment, infantInstallment] = await Promise.all([
-      this.adultInstallmentRepository.findOne({ where: { packageId, slotId } }),
-      this.childInstallmentRepository.findOne({ where: { packageId, slotId } }),
-      this.infantInstallmentRepository.findOne({ where: { packageId, slotId } })
-    ]);
+    let installmentData: {
+      adult: {
+        firstInstallment: number;
+        firstInstallmentDueDate: Date;
+        secondInstallment: number;
+        secondInstallmentDueDate: Date;
+        thirdInstallment: number;
+        thirdInstallmentDueDate: Date;
+        totalAmount: number;
+      } | null;
+      child: {
+        firstInstallment: number;
+        firstInstallmentDueDate: Date;
+        secondInstallment: number;
+        secondInstallmentDueDate: Date;
+        thirdInstallment: number;
+        thirdInstallmentDueDate: Date;
+        totalAmount: number;
+      } | null;
+      infant: {
+        firstInstallment: number;
+        firstInstallmentDueDate: Date;
+        secondInstallment: number;
+        secondInstallmentDueDate: Date;
+        thirdInstallment: number;
+        thirdInstallmentDueDate: Date;
+        totalAmount: number;
+      } | null;
+    } = {
+      adult: null,
+      child: null,
+      infant: null
+    };
+
+    // If installment plan exists, get the installment values and calculate due dates
+    if (packageFare.installmentPlan) {
+      const [adultValue, childValue, infantValue] = await Promise.all([
+        this.adultInstallmentValueRepository.findOne({ 
+          where: { installmentPlanId: packageFare.installmentPlan.id },
+          relations: ['installmentPlan']
+        }),
+        this.childInstallmentValueRepository.findOne({ 
+          where: { installmentPlanId: packageFare.installmentPlan.id },
+          relations: ['installmentPlan']
+        }),
+        this.infantInstallmentValueRepository.findOne({ 
+          where: { installmentPlanId: packageFare.installmentPlan.id },
+          relations: ['installmentPlan']
+        })
+      ]);
+
+      const baseDate = new Date(); // Use current date as booking date for calculation
+
+      if (adultValue) {
+        installmentData.adult = {
+          firstInstallment: Number(adultValue.firstInstallmentAmount),
+          firstInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.firstInstallmentDays * 24 * 60 * 60 * 1000),
+          secondInstallment: Number(adultValue.secondInstallmentAmount),
+          secondInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.secondInstallmentDays * 24 * 60 * 60 * 1000),
+          thirdInstallment: Number(adultValue.thirdInstallmentAmount),
+          thirdInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.thirdInstallmentDays * 24 * 60 * 60 * 1000),
+          totalAmount: Number(adultValue.firstInstallmentAmount) + Number(adultValue.secondInstallmentAmount) + Number(adultValue.thirdInstallmentAmount)
+        };
+      }
+
+      if (childValue) {
+        installmentData.child = {
+          firstInstallment: Number(childValue.firstInstallmentAmount),
+          firstInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.firstInstallmentDays * 24 * 60 * 60 * 1000),
+          secondInstallment: Number(childValue.secondInstallmentAmount),
+          secondInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.secondInstallmentDays * 24 * 60 * 60 * 1000),
+          thirdInstallment: Number(childValue.thirdInstallmentAmount),
+          thirdInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.thirdInstallmentDays * 24 * 60 * 60 * 1000),
+          totalAmount: Number(childValue.firstInstallmentAmount) + Number(childValue.secondInstallmentAmount) + Number(childValue.thirdInstallmentAmount)
+        };
+      }
+
+      if (infantValue) {
+        installmentData.infant = {
+          firstInstallment: Number(infantValue.firstInstallmentAmount),
+          firstInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.firstInstallmentDays * 24 * 60 * 60 * 1000),
+          secondInstallment: Number(infantValue.secondInstallmentAmount),
+          secondInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.secondInstallmentDays * 24 * 60 * 60 * 1000),
+          thirdInstallment: Number(infantValue.thirdInstallmentAmount),
+          thirdInstallmentDueDate: new Date(baseDate.getTime() + packageFare.installmentPlan.thirdInstallmentDays * 24 * 60 * 60 * 1000),
+          totalAmount: Number(infantValue.firstInstallmentAmount) + Number(infantValue.secondInstallmentAmount) + Number(infantValue.thirdInstallmentAmount)
+        };
+      }
+    }
 
     // Build response
     const response: PackagePricingResponseDto = {
@@ -403,35 +518,7 @@ export class PackagesService {
         child: Number(packageFare.childFare),
         infant: Number(packageFare.infantFare)
       },
-      installments: {
-        adult: adultInstallment ? {
-          firstInstallment: Number(adultInstallment.firstInstallment),
-          firstInstallmentDueDate: adultInstallment.firstInstallmentDueDate,
-          secondInstallment: Number(adultInstallment.secondInstallment),
-          secondInstallmentDueDate: adultInstallment.secondInstallmentDueDate,
-          thirdInstallment: Number(adultInstallment.thirdInstallment),
-          thirdInstallmentDueDate: adultInstallment.thirdInstallmentDueDate,
-          totalAmount: Number(adultInstallment.firstInstallment) + Number(adultInstallment.secondInstallment) + Number(adultInstallment.thirdInstallment)
-        } : null,
-        child: childInstallment ? {
-          firstInstallment: Number(childInstallment.firstInstallment),
-          firstInstallmentDueDate: childInstallment.firstInstallmentDueDate,
-          secondInstallment: Number(childInstallment.secondInstallment),
-          secondInstallmentDueDate: childInstallment.secondInstallmentDueDate,
-          thirdInstallment: Number(childInstallment.thirdInstallment),
-          thirdInstallmentDueDate: childInstallment.thirdInstallmentDueDate,
-          totalAmount: Number(childInstallment.firstInstallment) + Number(childInstallment.secondInstallment) + Number(childInstallment.thirdInstallment)
-        } : null,
-        infant: infantInstallment ? {
-          firstInstallment: Number(infantInstallment.firstInstallment),
-          firstInstallmentDueDate: infantInstallment.firstInstallmentDueDate,
-          secondInstallment: Number(infantInstallment.secondInstallment),
-          secondInstallmentDueDate: infantInstallment.secondInstallmentDueDate,
-          thirdInstallment: Number(infantInstallment.thirdInstallment),
-          thirdInstallmentDueDate: infantInstallment.thirdInstallmentDueDate,
-          totalAmount: Number(infantInstallment.firstInstallment) + Number(infantInstallment.secondInstallment) + Number(infantInstallment.thirdInstallment)
-        } : null
-      },
+      installments: installmentData,
       createdAt: packageFare.createdAt,
       updatedAt: packageFare.updatedAt
     };
