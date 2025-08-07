@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { 
-  Booking, 
-  BookingConcernPerson, 
-  BookingPassenger,
-  BookingPayment 
-} from './booking.entity';
+import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
-import { 
-  BookingController,
-} from './booking.controller';
+import { Booking, BookingConcernPerson, BookingPassenger, BookingPayment } from './booking.entity';
+import { Package, Slot, PackageFare, AdultAddon, ChildAddon, InfantAddon } from '../packages/packages.entity';
 
 @Module({
   imports: [
@@ -17,12 +11,16 @@ import {
       Booking,
       BookingConcernPerson,
       BookingPassenger,
-      BookingPayment
+      BookingPayment,
+      Package,
+      Slot,
+      PackageFare,
+      AdultAddon,
+      ChildAddon,
+      InfantAddon
     ])
   ],
-  controllers: [
-    BookingController,
-  ],
+  controllers: [BookingController],
   providers: [BookingService],
   exports: [BookingService]
 })

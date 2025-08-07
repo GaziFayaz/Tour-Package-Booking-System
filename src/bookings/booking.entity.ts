@@ -6,6 +6,9 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
+  ManyToMany,
+  JoinTable,
   JoinColumn,
   Index
 } from 'typeorm';
@@ -25,6 +28,7 @@ export enum Gender {
 }
 
 export enum BookingStatus {
+  PENDING = 'pending',
   COMPLETED = 'completed'
 }
 
@@ -35,7 +39,9 @@ export enum PaymentStatus {
 
 export enum PaymentType {
   FULL_PAYMENT = 'full_payment',
-  INSTALLMENT = 'installment'
+  FIRST_INSTALLMENT = 'first_installment',
+  SECOND_INSTALLMENT = 'second_installment',
+  THIRD_INSTALLMENT = 'third_installment'
 }
 
 // Main Booking Entity
@@ -94,8 +100,8 @@ export class Booking {
   @JoinColumn({ name: 'slotId' })
   slot: Slot;
 
-  @OneToMany(() => BookingConcernPerson, (concernPerson) => concernPerson.booking)
-  concernPersons: BookingConcernPerson[];
+  @OneToOne(() => BookingConcernPerson, (concernPerson) => concernPerson.booking)
+  concernPerson: BookingConcernPerson;
 
   @OneToMany(() => BookingPassenger, (passenger) => passenger.booking)
   passengers: BookingPassenger[];
@@ -111,6 +117,7 @@ export class BookingConcernPerson {
   id: number;
 
   @Column()
+  @Index({ unique: true })
   bookingId: number;
 
   @Column({ length: 255 })
@@ -132,7 +139,7 @@ export class BookingConcernPerson {
   updatedAt: Date;
 
   // Relationships
-  @ManyToOne(() => Booking, (booking) => booking.concernPersons, { onDelete: 'CASCADE' })
+  @OneToOne(() => Booking, (booking) => booking.concernPerson, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'bookingId' })
   booking: Booking;
 }
@@ -194,57 +201,83 @@ export class BookingPassenger {
   @Column({ length: 255, nullable: true })
   pickupPoint: string;
 
-  // Addon foreign key columns (nullable)
-  @Column({ nullable: true })
-  adultAddonPackageId: number;
-
-  @Column({ nullable: true })
-  adultAddonSlotId: number;
-
-  @Column({ nullable: true })
-  childAddonPackageId: number;
-
-  @Column({ nullable: true })
-  childAddonSlotId: number;
-
-  @Column({ nullable: true })
-  infantAddonPackageId: number;
-
-  @Column({ nullable: true })
-  infantAddonSlotId: number;
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
+  // Many-to-many relationships with addon entities
+  @ManyToMany(() => AdultAddon)
+  @JoinTable({
+    name: 'booking_passenger_adult_addons',
+    joinColumns: [
+      {
+        name: 'passengerId',
+        referencedColumnName: 'id'
+      }
+    ],
+    inverseJoinColumns: [
+      {
+        name: 'addonPackageId',
+        referencedColumnName: 'packageId'
+      },
+      {
+        name: 'addonSlotId',
+        referencedColumnName: 'slotId'
+      }
+    ]
+  })
+  adultAddons: AdultAddon[];
+
+  @ManyToMany(() => ChildAddon)
+  @JoinTable({
+    name: 'booking_passenger_child_addons',
+    joinColumns: [
+      {
+        name: 'passengerId',
+        referencedColumnName: 'id'
+      }
+    ],
+    inverseJoinColumns: [
+      {
+        name: 'addonPackageId',
+        referencedColumnName: 'packageId'
+      },
+      {
+        name: 'addonSlotId',
+        referencedColumnName: 'slotId'
+      }
+    ]
+  })
+  childAddons: ChildAddon[];
+
+  @ManyToMany(() => InfantAddon)
+  @JoinTable({
+    name: 'booking_passenger_infant_addons',
+    joinColumns: [
+      {
+        name: 'passengerId',
+        referencedColumnName: 'id'
+      }
+    ],
+    inverseJoinColumns: [
+      {
+        name: 'addonPackageId',
+        referencedColumnName: 'packageId'
+      },
+      {
+        name: 'addonSlotId',
+        referencedColumnName: 'slotId'
+      }
+    ]
+  })
+  infantAddons: InfantAddon[];
+
   // Relationships
   @ManyToOne(() => Booking, (booking) => booking.passengers, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'bookingId' })
   booking: Booking;
-
-  // Addon relationships (all nullable)
-  @ManyToOne(() => AdultAddon, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn([
-    { name: 'adultAddonPackageId', referencedColumnName: 'packageId' },
-    { name: 'adultAddonSlotId', referencedColumnName: 'slotId' }
-  ])
-  adultAddon?: AdultAddon;
-
-  @ManyToOne(() => ChildAddon, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn([
-    { name: 'childAddonPackageId', referencedColumnName: 'packageId' },
-    { name: 'childAddonSlotId', referencedColumnName: 'slotId' }
-  ])
-  childAddon?: ChildAddon;
-
-  @ManyToOne(() => InfantAddon, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn([
-    { name: 'infantAddonPackageId', referencedColumnName: 'packageId' },
-    { name: 'infantAddonSlotId', referencedColumnName: 'slotId' }
-  ])
-  infantAddon?: InfantAddon;
 }
 
 // Booking Payment Entity

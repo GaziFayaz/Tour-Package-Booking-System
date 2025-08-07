@@ -260,7 +260,6 @@ export class InfantInstallment {
 @Entity('adult_addons')
 @Index(['packageId', 'slotId'], { unique: true }) // Composite unique index
 export class AdultAddon {
-
     @PrimaryColumn()
     packageId: number;
 
