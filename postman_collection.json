@@ -1,0 +1,973 @@
+{
+  "info": {
+    "name": "NestJS Packages API",
+    "description": "Complete API collection for the NestJS Packages management system with TypeORM and MySQL. Includes endpoints for Packages, Slots, Fares, Installments, and Addons for all age categories (Adult, Child, Infant).",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📦 Packages",
+      "item": [
+        {
+          "name": "Create Package",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dubai Adventure Package\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages"]
+            }
+          }
+        },
+        {
+          "name": "Get All Packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages"]
+            }
+          }
+        },
+        {
+          "name": "Get Package by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Package",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Dubai Package\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/packages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Package",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Package Pricing (All Categories)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/1/slots/1/pricing",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "1", "slots", "1", "pricing"]
+            },
+            "description": "Get complete pricing information including fares and installments for all categories (Adult, Child, Infant) by package ID and slot ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎰 Slots",
+      "item": [
+        {
+          "name": "Create Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer Slot 2025\",\n  \"seatCount\": 50,\n  \"startDate\": \"2025-06-01T00:00:00.000Z\",\n  \"endDate\": \"2025-08-31T23:59:59.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            }
+          }
+        },
+        {
+          "name": "Get All Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            }
+          }
+        },
+        {
+          "name": "Get Slot by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Slot",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seatCount\": 75,\n  \"startDate\": \"2025-06-15T00:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slots/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Slot",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Package Fares",
+      "item": [
+        {
+          "name": "Create Package Fare",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"adultFare\": 2500.00,\n  \"childFare\": 1500.00,\n  \"infantFare\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/package-fares",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares"]
+            }
+          }
+        },
+        {
+          "name": "Get All Package Fares",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares"]
+            }
+          }
+        },
+        {
+          "name": "Get Package Fare by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Package Fare",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adultFare\": 2750.00,\n  \"childFare\": 1650.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Package Fare",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍🦳 Adult Installments",
+      "item": [
+        {
+          "name": "Create Adult Installment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"firstInstallment\": 1000.00,\n  \"firstInstallmentDueDate\": \"2025-03-01\",\n  \"secondInstallment\": 750.00,\n  \"secondInstallmentDueDate\": \"2025-04-01\",\n  \"thirdInstallment\": 750.00,\n  \"thirdInstallmentDueDate\": \"2025-05-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get All Adult Installments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get Adult Installment by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Adult Installment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstInstallment\": 1100.00,\n  \"secondInstallment\": 800.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Adult Installment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👶 Child Installments",
+      "item": [
+        {
+          "name": "Create Child Installment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"firstInstallment\": 600.00,\n  \"firstInstallmentDueDate\": \"2025-03-01\",\n  \"secondInstallment\": 450.00,\n  \"secondInstallmentDueDate\": \"2025-04-01\",\n  \"thirdInstallment\": 450.00,\n  \"thirdInstallmentDueDate\": \"2025-05-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/child-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get All Child Installments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get Child Installment by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Child Installment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstInstallment\": 650.00,\n  \"secondInstallment\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/child-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Child Installment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-installments", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍼 Infant Installments",
+      "item": [
+        {
+          "name": "Create Infant Installment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"firstInstallment\": 200.00,\n  \"firstInstallmentDueDate\": \"2025-03-01\",\n  \"secondInstallment\": 150.00,\n  \"secondInstallmentDueDate\": \"2025-04-01\",\n  \"thirdInstallment\": 150.00,\n  \"thirdInstallmentDueDate\": \"2025-05-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/infant-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get All Infant Installments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-installments"]
+            }
+          }
+        },
+        {
+          "name": "Get Infant Installment by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Infant Installment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstInstallment\": 220.00,\n  \"secondInstallment\": 170.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/infant-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-installments", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Infant Installment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-installments/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-installments", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "�‍🦳 Adult Addons",
+      "item": [
+        {
+          "name": "Create Adult Addon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Airport Transfer\",\n  \"fare\": 150.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get All Adult Addons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get Adult Addon by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Adult Addon",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Premium Airport Transfer\",\n  \"fare\": 200.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Adult Addon",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👶 Child Addons",
+      "item": [
+        {
+          "name": "Create Child Addon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Kids Entertainment\",\n  \"fare\": 75.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/child-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get All Child Addons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get Child Addon by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Child Addon",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Premium Kids Activities\",\n  \"fare\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/child-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Child Addon",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/child-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍼 Infant Addons",
+      "item": [
+        {
+          "name": "Create Infant Addon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Baby Care Kit\",\n  \"fare\": 25.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get All Infant Addons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons"]
+            }
+          }
+        },
+        {
+          "name": "Get Infant Addon by IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Infant Addon",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Premium Baby Care Package\",\n  \"fare\": 40.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Infant Addon",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons/1/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons", "1", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "�🔄 Workflow Examples",
+      "item": [
+        {
+          "name": "1. Create Package",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Complete Dubai Package\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages"]
+            }
+          }
+        },
+        {
+          "name": "2. Create Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer 2025 Slot\",\n  \"seatCount\": 50,\n  \"startDate\": \"2025-06-01T00:00:00.000Z\",\n  \"endDate\": \"2025-08-31T23:59:59.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            }
+          }
+        },
+        {
+          "name": "3. Create Package Fare",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"adultFare\": 2500.00,\n  \"childFare\": 1500.00,\n  \"infantFare\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/package-fares",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares"]
+            }
+          }
+        },
+        {
+          "name": "4. Create Adult Installments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"firstInstallment\": 1000.00,\n  \"firstInstallmentDueDate\": \"2025-03-01\",\n  \"secondInstallment\": 750.00,\n  \"secondInstallmentDueDate\": \"2025-04-01\",\n  \"thirdInstallment\": 750.00,\n  \"thirdInstallmentDueDate\": \"2025-05-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-installments",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-installments"]
+            }
+          }
+        },
+        {
+          "name": "5. Create Adult Addons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Airport Transfer\",\n  \"fare\": 150.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adult-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["adult-addons"]
+            }
+          }
+        },
+        {
+          "name": "6. Create Child Addons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Kids Entertainment\",\n  \"fare\": 75.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/child-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["child-addons"]
+            }
+          }
+        },
+        {
+          "name": "7. Create Infant Addons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": 1,\n  \"slotId\": 1,\n  \"type\": \"Baby Care Kit\",\n  \"fare\": 25.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/infant-addons",
+              "host": ["{{baseUrl}}"],
+              "path": ["infant-addons"]
+            }
+          }
+        },
+        {
+          "name": "8. Get Package with All Relations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is success\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+          "});",
+          "",
+          "pm.test(\"Response time is less than 500ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+          "});",
+          "",
+          "if (pm.response.code === 200 || pm.response.code === 201) {",
+          "    pm.test(\"Response has valid JSON\", function () {",
+          "        pm.response.to.have.jsonBody();",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

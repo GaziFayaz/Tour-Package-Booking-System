@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "test:api": "newman run postman_collection.json -e postman_environment.json --reporters cli,json --reporter-json-export test-results.json",
+    "test:api:verbose": "newman run postman_collection.json -e postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/",
+    "postman:install": "npm install -g newman newman-reporter-htmlextra"
+  },
+  "testCommands": {
+    "description": "Add these scripts to your package.json scripts section for automated API testing",
+    "note": "Run 'npm run postman:install' first to install Newman CLI"
+  }
+}
