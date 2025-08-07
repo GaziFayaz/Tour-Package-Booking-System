@@ -98,14 +98,30 @@ export class BookingService {
       ]
     });
 
+    let concernPersonId: number;
+
+    // Create or connect concern person
     if (existingConcernPerson) {
-      throw new BadRequestException(`A concern person with email ${concernPerson.email} or phone ${concernPerson.phone} already exists`);
+      // Use existing concern person
+      concernPersonId = existingConcernPerson.id;
+    } else {
+      // Create new concern person
+      const newConcernPerson = this.concernPersonRepository.create({
+        name: concernPerson.name,
+        email: concernPerson.email,
+        phone: concernPerson.phone,
+        address: concernPerson.address
+      });
+
+      const savedConcernPerson = await this.concernPersonRepository.save(newConcernPerson);
+      concernPersonId = savedConcernPerson.id;
     }
 
-    // Create booking
+    // Create booking with concern person reference
     const booking = this.bookingRepository.create({
       packageId,
       slotId,
+      concernPersonId,
       totalAmount,
       pendingAmount: totalAmount,
       specialInstructions,
@@ -113,17 +129,6 @@ export class BookingService {
     });
 
     const savedBooking = await this.bookingRepository.save(booking);
-
-    // Create concern person
-    const newConcernPerson = this.concernPersonRepository.create({
-      bookingId: savedBooking.id,
-      name: concernPerson.name,
-      email: concernPerson.email,
-      phone: concernPerson.phone,
-      address: concernPerson.address
-    });
-
-    await this.concernPersonRepository.save(newConcernPerson);
 
     // Create passengers
     for (const passengerData of passengers) {

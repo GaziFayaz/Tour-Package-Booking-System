@@ -33,6 +33,9 @@ export class Booking {
   @Column()
   slotId: number;
 
+  @Column()
+  concernPersonId: number;
+
   @Column({
     type: 'enum',
     enum: BookingStatus,
@@ -77,7 +80,8 @@ export class Booking {
   @JoinColumn({ name: 'slotId' })
   slot: Slot;
 
-  @OneToOne('BookingConcernPerson', (concernPerson: any) => concernPerson.booking)
+  @ManyToOne('BookingConcernPerson', (concernPerson: any) => concernPerson.bookings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'concernPersonId' })
   concernPerson: any;
 
   @OneToMany('BookingPassenger', (passenger: any) => passenger.booking)

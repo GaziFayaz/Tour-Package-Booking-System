@@ -4,8 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
-  JoinColumn,
+  OneToMany,
   Index
 } from 'typeorm';
 
@@ -14,10 +13,6 @@ import {
 export class BookingConcernPerson {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  @Index({ unique: true })
-  bookingId: number;
 
   @Column({ length: 255 })
   name: string;
@@ -38,7 +33,6 @@ export class BookingConcernPerson {
   updatedAt: Date;
 
   // Relationships
-  @OneToOne('Booking', (booking: any) => booking.concernPerson, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'bookingId' })
-  booking: any;
+  @OneToMany('Booking', (booking: any) => booking.concernPerson)
+  bookings: any[];
 }
