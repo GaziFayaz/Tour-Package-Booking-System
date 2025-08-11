@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Booking } from '../bookings/entities/booking.entity';
 
 @Entity('users')
@@ -18,6 +19,10 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  @Exclude()
+  password: string;
 
   @Column()
   phone: string;

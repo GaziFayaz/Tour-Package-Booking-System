@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +17,23 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.create(createUserDto);
+    // Check if user already exists
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
+
+    const user = this.usersRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+
     return await this.usersRepository.save(user);
   }
 
@@ -29,23 +50,17 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     return user;
   }
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findOne({
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.usersRepository.findOne({
       where: { email },
       relations: ['bookings'],
     });
-
-    if (!user) {
-      throw new Error(`User with email ${email} not found`);
-    }
-
-    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
@@ -56,7 +71,7 @@ export class UsersService {
   async remove(id: number): Promise<void> {
     const result = await this.usersRepository.delete(id);
     if (result.affected === 0) {
-      throw new Error(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
   }
 }

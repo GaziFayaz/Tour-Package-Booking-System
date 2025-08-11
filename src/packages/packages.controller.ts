@@ -8,8 +8,12 @@ import {
   Delete,
   ParseIntPipe,
   NotFoundException,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { PackagesService } from './packages.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type {
   CreatePackageDto,
   UpdatePackageDto,
@@ -35,11 +39,13 @@ import type {
 } from './packages.dto';
 
 @Controller('packages')
+@UseInterceptors(ClassSerializerInterceptor)
 export class PackagesController {
   constructor(private readonly packagesService: PackagesService) {}
 
   // =================== PACKAGE ENDPOINTS ===================
   @Post()
+  @UseGuards(JwtAuthGuard)
   createPackage(@Body() createPackageDto: CreatePackageDto) {
     return this.packagesService.createPackage(createPackageDto);
   }
@@ -59,6 +65,7 @@ export class PackagesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async updatePackage(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePackageDto: UpdatePackageDto,
@@ -71,6 +78,7 @@ export class PackagesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   removePackage(@Param('id', ParseIntPipe) id: number) {
     return this.packagesService.removePackage(id);
   }

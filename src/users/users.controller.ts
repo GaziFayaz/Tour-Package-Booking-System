@@ -8,12 +8,18 @@ import {
   Delete,
   HttpStatus,
   HttpException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -56,7 +62,11 @@ export class UsersController {
   @Get('email/:email')
   async findByEmail(@Param('email') email: string): Promise<User> {
     try {
-      return await this.usersService.findByEmail(email);
+      const user = await this.usersService.findByEmail(email);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      return user;
     } catch (error) {
       throw new HttpException(
         error.message || 'User not found',

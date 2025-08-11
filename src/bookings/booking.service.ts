@@ -61,8 +61,8 @@ export class BookingService {
    */
   private validateAndCalculateAddonCost(
     selectedAddonIds: number[] | undefined,
-    availableAddons: any[],
-    addonType: string,
+    availableAddons: AdultAddon[] | ChildAddon[] | InfantAddon[],
+    addonType: 'adult' | 'child' | 'infant',
   ): number {
     if (!selectedAddonIds || selectedAddonIds.length === 0) {
       return 0;

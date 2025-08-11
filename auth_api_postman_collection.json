@@ -1,0 +1,245 @@
+{
+  "info": {
+    "name": "Auth APIs - Tour Booking System",
+    "description": "JWT-based authentication endpoints for the Tour Package Booking System",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "User Registration",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.access_token) {",
+              "        pm.collectionVariables.set('access_token', response.access_token);",
+              "        console.log('JWT token saved:', response.access_token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\",\n  \"photoUrl\": \"https://example.com/photo.jpg\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        },
+        "description": "Register a new user account. Returns JWT token and user data."
+      },
+      "response": [
+        {
+          "name": "Successful Registration",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\",\n  \"photoUrl\": \"https://example.com/photo.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 1,\n    \"email\": \"john.doe@example.com\",\n    \"name\": \"John Doe\",\n    \"phone\": \"+1234567890\",\n    \"photoUrl\": \"https://example.com/photo.jpg\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "User Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.access_token) {",
+              "        pm.collectionVariables.set('access_token', response.access_token);",
+              "        console.log('JWT token saved:', response.access_token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "description": "Authenticate user with email and password. Returns JWT token and user data."
+      },
+      "response": [
+        {
+          "name": "Successful Login",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 1,\n    \"email\": \"john.doe@example.com\",\n    \"name\": \"John Doe\",\n    \"phone\": \"+1234567890\",\n    \"photoUrl\": \"https://example.com/photo.jpg\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get User Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "profile"]
+        },
+        "description": "Get current user profile from JWT token. Requires authentication."
+      },
+      "response": [
+        {
+          "name": "Profile Retrieved",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"userId\": 1,\n  \"email\": \"john.doe@example.com\",\n  \"name\": \"John Doe\"\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
