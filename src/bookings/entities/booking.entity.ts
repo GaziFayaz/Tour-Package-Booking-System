@@ -9,6 +9,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { User } from 'src/users/user.entity';
 import { BookingConcernPerson } from './booking-concern-person.entity';
 import { BookingPassenger } from './booking-passenger.entity';
 import { BookingPayment } from './booking-payment.entity';
@@ -34,6 +35,9 @@ export class Booking {
 
   @Column()
   slotId: number;
+
+  @Column()
+  userId: number;
 
   @Column()
   concernPersonId: number;
@@ -84,6 +88,10 @@ export class Booking {
   updatedAt: Date;
 
   // Relationships
+  @ManyToOne(() => User, (user) => user.bookings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
   @ManyToOne(() => Package, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'packageId' })
   package: Package;
