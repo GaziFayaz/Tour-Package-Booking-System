@@ -12,7 +12,7 @@ export interface UserResponse {
   email: string;
   name: string;
   phone: string;
-  photoUrl?: string;
+  photoUrl?: string | null;
   role: string;
 }
 
@@ -26,7 +26,7 @@ export interface ValidatedUser {
   email: string;
   name: string;
   phone: string;
-  photoUrl?: string;
+  photoUrl?: string | null;
   role: string;
   createdAt: Date;
   updatedAt: Date;

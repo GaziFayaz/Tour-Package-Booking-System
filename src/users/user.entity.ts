@@ -28,8 +28,11 @@ export class User {
   @Column()
   phone: string;
 
-  @Column({ nullable: true })
-  photoUrl: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  photoUrl: string | null;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  photoPublicId: string | null; // Store Cloudinary public_id for deletion
 
   @Column({
     type: 'enum',
