@@ -121,9 +121,12 @@ export class BookingService {
           break;
       }
 
-      // Add addon costs - assuming addonIds represent addon types
+      // Add addon costs - only for specifically selected addons
       if (passenger.adultAddonIds && passenger.adultAddonIds.length > 0) {
-        const adultAddonTotal = adultAddons.reduce(
+        const selectedAdultAddons = adultAddons.filter((addon) =>
+          passenger.adultAddonIds?.includes(addon.id),
+        );
+        const adultAddonTotal = selectedAdultAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
         );
@@ -132,7 +135,10 @@ export class BookingService {
       }
 
       if (passenger.childAddonIds && passenger.childAddonIds.length > 0) {
-        const childAddonTotal = childAddons.reduce(
+        const selectedChildAddons = childAddons.filter((addon) =>
+          passenger.childAddonIds?.includes(addon.id),
+        );
+        const childAddonTotal = selectedChildAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
         );
@@ -141,7 +147,10 @@ export class BookingService {
       }
 
       if (passenger.infantAddonIds && passenger.infantAddonIds.length > 0) {
-        const infantAddonTotal = infantAddons.reduce(
+        const selectedInfantAddons = infantAddons.filter((addon) =>
+          passenger.infantAddonIds?.includes(addon.id),
+        );
+        const infantAddonTotal = selectedInfantAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
         );
