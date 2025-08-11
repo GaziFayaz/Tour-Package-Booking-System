@@ -1,45 +1,49 @@
-import { 
-  Column, 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
-  OneToMany
-} from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { PackageFare } from './package-fare.entity';
+import { AdultAddon } from './adult-addon.entity';
+import { ChildAddon } from './child-addon.entity';
+import { InfantAddon } from './infant-addon.entity';
 
 @Entity('slots')
 export class Slot {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ unique: true })
-    name: string;
+  @Column({ unique: true })
+  name: string;
 
-    @Column({ type: 'int', unsigned: true })
-    seatCount: number;
+  @Column({ type: 'int', unsigned: true })
+  seatCount: number;
 
-    @Column({ type: 'datetime' })
-    startDate: Date;
+  @Column({ type: 'datetime' })
+  startDate: Date;
 
-    @Column({ type: 'datetime' })
-    endDate: Date;
+  @Column({ type: 'datetime' })
+  endDate: Date;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    // Relationships
-    @OneToMany('PackageFare', 'slot')
-    fares: any[];
+  // Relationships
+  @OneToMany(() => PackageFare, (fare) => fare.slot)
+  fares: PackageFare[];
 
-    @OneToMany('AdultAddon', 'slot')
-    adultAddons: any[];
+  @OneToMany(() => AdultAddon, (addon) => addon.slot)
+  adultAddons: AdultAddon[];
 
-    @OneToMany('ChildAddon', 'slot')
-    childAddons: any[];
+  @OneToMany(() => ChildAddon, (addon) => addon.slot)
+  childAddons: ChildAddon[];
 
-    @OneToMany('InfantAddon', 'slot')
-    infantAddons: any[];
+  @OneToMany(() => InfantAddon, (addon) => addon.slot)
+  infantAddons: InfantAddon[];
 }

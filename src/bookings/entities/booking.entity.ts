@@ -7,13 +7,15 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   JoinColumn,
 } from 'typeorm';
+import { BookingConcernPerson } from './booking-concern-person.entity';
+import { BookingPassenger } from './booking-passenger.entity';
+import { BookingPayment } from './booking-payment.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
 }
 
 export enum PaymentStatus {
@@ -39,14 +41,14 @@ export class Booking {
   @Column({
     type: 'enum',
     enum: BookingStatus,
-    default: BookingStatus.COMPLETED
+    default: BookingStatus.COMPLETED,
   })
   status: BookingStatus;
 
   @Column({
     type: 'enum',
     enum: PaymentStatus,
-    default: PaymentStatus.PENDING
+    default: PaymentStatus.PENDING,
   })
   paymentStatus: PaymentStatus;
 
@@ -90,13 +92,20 @@ export class Booking {
   @JoinColumn({ name: 'slotId' })
   slot: Slot;
 
-  @ManyToOne('BookingConcernPerson', (concernPerson: any) => concernPerson.bookings, { onDelete: 'CASCADE' })
+  @ManyToOne(
+    () => BookingConcernPerson,
+    (concernPerson: BookingConcernPerson) => concernPerson.bookings,
+    { onDelete: 'CASCADE' },
+  )
   @JoinColumn({ name: 'concernPersonId' })
-  concernPerson: any;
+  concernPerson: BookingConcernPerson;
 
-  @OneToMany('BookingPassenger', (passenger: any) => passenger.booking)
-  passengers: any[];
+  @OneToMany(
+    () => BookingPassenger,
+    (passenger: BookingPassenger) => passenger.booking,
+  )
+  passengers: BookingPassenger[];
 
-  @OneToMany('BookingPayment', (payment: any) => payment.booking)
-  payments: any[];
+  @OneToMany(() => BookingPayment, (payment: BookingPayment) => payment.booking)
+  payments: BookingPayment[];
 }

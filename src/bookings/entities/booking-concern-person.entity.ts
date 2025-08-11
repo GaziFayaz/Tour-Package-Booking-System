@@ -5,8 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  Index
 } from 'typeorm';
+import { Booking } from './booking.entity';
 
 // Booking Concern Person Entity
 @Entity('booking_concern_persons')
@@ -33,6 +33,6 @@ export class BookingConcernPerson {
   updatedAt: Date;
 
   // Relationships
-  @OneToMany('Booking', (booking: any) => booking.concernPerson)
-  bookings: any[];
+  @OneToMany(() => Booking, (booking: Booking) => booking.concernPerson)
+  bookings: Booking[];
 }

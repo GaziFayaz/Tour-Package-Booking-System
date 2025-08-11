@@ -7,12 +7,13 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Booking } from './booking.entity';
 
 export enum PaymentType {
   FULL_PAYMENT = 'full_payment',
   FIRST_INSTALLMENT = 'first_installment',
   SECOND_INSTALLMENT = 'second_installment',
-  THIRD_INSTALLMENT = 'third_installment'
+  THIRD_INSTALLMENT = 'third_installment',
 }
 
 // Booking Payment Entity
@@ -29,7 +30,7 @@ export class BookingPayment {
 
   @Column({
     type: 'enum',
-    enum: PaymentType
+    enum: PaymentType,
   })
   paymentType: PaymentType; // if it is full payment or installment
 
@@ -55,7 +56,9 @@ export class BookingPayment {
   updatedAt: Date;
 
   // Relationships
-  @ManyToOne('Booking', (booking: any) => booking.payments, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Booking, (booking: Booking) => booking.payments, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'bookingId' })
-  booking: any;
+  booking: Booking;
 }

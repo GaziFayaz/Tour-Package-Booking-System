@@ -8,6 +8,8 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { Package } from './package.entity';
+import { Slot } from './slot.entity';
 
 @Entity('infant_addons')
 @Index(['packageId', 'slotId']) // Non-unique composite index for querying
@@ -34,11 +36,11 @@ export class InfantAddon {
   updatedAt: Date;
 
   // Relationships
-  @ManyToOne('Package', 'infantAddons', { onDelete: 'CASCADE' })
+  @ManyToOne(() => Package, (pkg) => pkg.infantAddons, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'packageId' })
-  package: any;
+  package: Package;
 
-  @ManyToOne('Slot', 'infantAddons', { onDelete: 'CASCADE' })
+  @ManyToOne(() => Slot, (slot) => slot.infantAddons, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'slotId' })
-  slot: any;
+  slot: Slot;
 }

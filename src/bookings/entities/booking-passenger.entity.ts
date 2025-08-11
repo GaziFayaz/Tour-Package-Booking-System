@@ -10,6 +10,7 @@ import {
   JoinTable,
   JoinColumn,
 } from 'typeorm';
+import { Booking } from './booking.entity';
 
 export enum PassengerType {
   ADULT = 'adult',
@@ -142,9 +143,9 @@ export class BookingPassenger {
   infantAddons: InfantAddon[];
 
   // Relationships
-  @ManyToOne('Booking', (booking: any) => booking.passengers, {
+  @ManyToOne(() => Booking, (booking: Booking) => booking.passengers, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'bookingId' })
-  booking: any;
+  booking: Booking;
 }
