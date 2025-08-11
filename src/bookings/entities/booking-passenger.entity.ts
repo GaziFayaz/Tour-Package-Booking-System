@@ -14,13 +14,13 @@ import {
 export enum PassengerType {
   ADULT = 'adult',
   CHILD = 'child',
-  INFANT = 'infant'
+  INFANT = 'infant',
 }
 
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 // Booking Passenger Entity
@@ -40,7 +40,7 @@ export class BookingPassenger {
 
   @Column({
     type: 'enum',
-    enum: PassengerType
+    enum: PassengerType,
   })
   type: PassengerType;
 
@@ -55,7 +55,7 @@ export class BookingPassenger {
 
   @Column({
     type: 'enum',
-    enum: Gender
+    enum: Gender,
   })
   gender: Gender;
 
@@ -93,19 +93,15 @@ export class BookingPassenger {
     joinColumns: [
       {
         name: 'passengerId',
-        referencedColumnName: 'id'
-      }
+        referencedColumnName: 'id',
+      },
     ],
     inverseJoinColumns: [
       {
-        name: 'addonPackageId',
-        referencedColumnName: 'packageId'
+        name: 'addonId',
+        referencedColumnName: 'id',
       },
-      {
-        name: 'addonSlotId',
-        referencedColumnName: 'slotId'
-      }
-    ]
+    ],
   })
   adultAddons: AdultAddon[];
 
@@ -115,19 +111,15 @@ export class BookingPassenger {
     joinColumns: [
       {
         name: 'passengerId',
-        referencedColumnName: 'id'
-      }
+        referencedColumnName: 'id',
+      },
     ],
     inverseJoinColumns: [
       {
-        name: 'addonPackageId',
-        referencedColumnName: 'packageId'
+        name: 'addonId',
+        referencedColumnName: 'id',
       },
-      {
-        name: 'addonSlotId',
-        referencedColumnName: 'slotId'
-      }
-    ]
+    ],
   })
   childAddons: ChildAddon[];
 
@@ -137,24 +129,22 @@ export class BookingPassenger {
     joinColumns: [
       {
         name: 'passengerId',
-        referencedColumnName: 'id'
-      }
+        referencedColumnName: 'id',
+      },
     ],
     inverseJoinColumns: [
       {
-        name: 'addonPackageId',
-        referencedColumnName: 'packageId'
+        name: 'addonId',
+        referencedColumnName: 'id',
       },
-      {
-        name: 'addonSlotId',
-        referencedColumnName: 'slotId'
-      }
-    ]
+    ],
   })
   infantAddons: InfantAddon[];
 
   // Relationships
-  @ManyToOne('Booking', (booking: any) => booking.passengers, { onDelete: 'CASCADE' })
+  @ManyToOne('Booking', (booking: any) => booking.passengers, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'bookingId' })
   booking: any;
 }

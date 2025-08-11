@@ -1,41 +1,44 @@
-import { 
-  Column, 
-  Entity, 
-  PrimaryColumn,
-  CreateDateColumn, 
-  UpdateDateColumn, 
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  Index
-} from "typeorm";
+  Index,
+} from 'typeorm';
 
 @Entity('child_addons')
-@Index(['packageId', 'slotId'], { unique: true }) // Composite unique index
+@Index(['packageId', 'slotId']) // Non-unique composite index for querying
 export class ChildAddon {
-    @PrimaryColumn()
-    packageId: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryColumn()
-    slotId: number;
+  @Column()
+  packageId: number;
 
-    @Column({ type: 'varchar', length: 255 })
-    type: string;
+  @Column()
+  slotId: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true })
-    fare: number;
+  @Column({ type: 'varchar', length: 255 })
+  type: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true })
+  fare: number;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    // Relationships
-    @ManyToOne('Package', 'childAddons', { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'packageId' })
-    package: any;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @ManyToOne('Slot', 'childAddons', { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'slotId' })
-    slot: any;
+  // Relationships
+  @ManyToOne('Package', 'childAddons', { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'packageId' })
+  package: any;
+
+  @ManyToOne('Slot', 'childAddons', { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'slotId' })
+  slot: any;
 }

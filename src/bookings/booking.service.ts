@@ -123,7 +123,6 @@ export class BookingService {
 
       // Add addon costs - assuming addonIds represent addon types
       if (passenger.adultAddonIds && passenger.adultAddonIds.length > 0) {
-
         const adultAddonTotal = adultAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
@@ -214,15 +213,15 @@ export class BookingService {
 
       const savedPassenger = await this.passengerRepository.save(passenger);
 
-      // Handle addon relationships
+      // Handle addon relationships using already retrieved addons
       if (
         passengerData.adultAddonIds &&
         passengerData.adultAddonIds.length > 0
       ) {
-        const adultAddons = await this.adultAddonRepository.find({
-          where: { packageId, slotId },
-        });
-        savedPassenger.adultAddons = adultAddons;
+        const selectedAdultAddons = adultAddons.filter((addon) =>
+          passengerData.adultAddonIds?.includes(addon.id),
+        );
+        savedPassenger.adultAddons = selectedAdultAddons;
         await this.passengerRepository.save(savedPassenger);
       }
 
@@ -230,10 +229,10 @@ export class BookingService {
         passengerData.childAddonIds &&
         passengerData.childAddonIds.length > 0
       ) {
-        const childAddons = await this.childAddonRepository.find({
-          where: { packageId, slotId },
-        });
-        savedPassenger.childAddons = childAddons;
+        const selectedChildAddons = childAddons.filter((addon) =>
+          passengerData.childAddonIds?.includes(addon.id),
+        );
+        savedPassenger.childAddons = selectedChildAddons;
         await this.passengerRepository.save(savedPassenger);
       }
 
@@ -241,10 +240,10 @@ export class BookingService {
         passengerData.infantAddonIds &&
         passengerData.infantAddonIds.length > 0
       ) {
-        const infantAddons = await this.infantAddonRepository.find({
-          where: { packageId, slotId },
-        });
-        savedPassenger.infantAddons = infantAddons;
+        const selectedInfantAddons = infantAddons.filter((addon) =>
+          passengerData.infantAddonIds?.includes(addon.id),
+        );
+        savedPassenger.infantAddons = selectedInfantAddons;
         await this.passengerRepository.save(savedPassenger);
       }
     }
