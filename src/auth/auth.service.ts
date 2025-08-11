@@ -41,6 +41,7 @@ export class AuthService {
       email: user.email,
       sub: user.id,
       name: user.name,
+      role: user.role,
     };
 
     const userResponse: UserResponse = {
@@ -49,6 +50,7 @@ export class AuthService {
       name: user.name,
       phone: user.phone,
       photoUrl: user.photoUrl,
+      role: user.role,
     };
 
     return {
@@ -57,17 +59,24 @@ export class AuthService {
     };
   }
 
-  async register(createUserDto: CreateUserDto): Promise<LoginResponse> {
-    const user = await this.usersService.create(createUserDto);
-    const { password, ...result } = user;
-    return this.login(result);
-  }
-
   async loginWithCredentials(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
     return this.login(user);
+  }
+
+  async findUserById(id: number) {
+    return this.usersService.findOne(id);
+  }
+
+  async createUser(
+    createUserDto: CreateUserDto,
+    currentUser: any,
+  ): Promise<LoginResponse> {
+    const user = await this.usersService.create(createUserDto, currentUser);
+    const { password, ...result } = user;
+    return this.login(result);
   }
 }

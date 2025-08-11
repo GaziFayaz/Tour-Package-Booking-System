@@ -16,17 +16,29 @@ import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { Role } from '../common/enums/role.enum';
+import type { JwtUser } from '../auth/strategies/jwt.strategy';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  @Roles(Role.SUPER_ADMIN) // Only super admins can create users with roles
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @GetUser() currentUser: JwtUser,
+  ): Promise<User> {
     try {
-      return await this.usersService.create(createUserDto);
+      const fullCurrentUser = await this.usersService.findOne(
+        currentUser.userId,
+      );
+      return await this.usersService.create(createUserDto, fullCurrentUser);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to create user',
@@ -36,6 +48,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can view all users
   async findAll(): Promise<User[]> {
     try {
       return await this.usersService.findAll();
@@ -48,6 +61,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can view specific users
   async findOne(@Param('id') id: string): Promise<User> {
     try {
       return await this.usersService.findOne(+id);
@@ -60,6 +74,7 @@ export class UsersController {
   }
 
   @Get('email/:email')
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can search by email
   async findByEmail(@Param('email') email: string): Promise<User> {
     try {
       const user = await this.usersService.findByEmail(email);
@@ -76,12 +91,21 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @Roles(Role.SUPER_ADMIN) // Only super admins can update users (including role changes)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @GetUser() currentUser: JwtUser,
   ): Promise<User> {
     try {
-      return await this.usersService.update(+id, updateUserDto);
+      const fullCurrentUser = await this.usersService.findOne(
+        currentUser.userId,
+      );
+      return await this.usersService.update(
+        +id,
+        updateUserDto,
+        fullCurrentUser,
+      );
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to update user',
@@ -91,6 +115,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(Role.SUPER_ADMIN) // Only super admins can delete users
   async remove(@Param('id') id: string): Promise<{ message: string }> {
     try {
       await this.usersService.remove(+id);

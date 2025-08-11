@@ -1,30 +1,31 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { 
-  Package, 
-  Slot, 
-  PackageFare, 
+import {
+  Package,
+  Slot,
+  PackageFare,
   InstallmentPlan,
   AdultInstallmentValue,
   ChildInstallmentValue,
   InfantInstallmentValue,
   AdultAddon,
   ChildAddon,
-  InfantAddon
+  InfantAddon,
 } from './entities';
 import { PackagesService } from './packages.service';
-import { 
-  PackagesController, 
-  SlotsController, 
-  PackageFaresController, 
+import {
+  PackagesController,
+  SlotsController,
+  PackageFaresController,
   InstallmentPlansController,
   AdultInstallmentValuesController,
   ChildInstallmentValuesController,
   InfantInstallmentValuesController,
   AdultAddonsController,
   ChildAddonsController,
-  InfantAddonsController
+  InfantAddonsController,
 } from './packages.controller';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -38,8 +39,9 @@ import {
       InfantInstallmentValue,
       AdultAddon,
       ChildAddon,
-      InfantAddon
-    ])
+      InfantAddon,
+    ]),
+    AuthModule,
   ],
   controllers: [
     PackagesController,
@@ -51,7 +53,7 @@ import {
     InfantInstallmentValuesController,
     AdultAddonsController,
     ChildAddonsController,
-    InfantAddonsController
+    InfantAddonsController,
   ],
   providers: [PackagesService],
   exports: [PackagesService, TypeOrmModule],

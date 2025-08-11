@@ -14,10 +14,14 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto } from './booking.dto';
 import { Booking } from './entities';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
+import { Role } from '../common/enums/role.enum';
 
 @Controller('bookings')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage bookings
 @UseInterceptors(ClassSerializerInterceptor)
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}

@@ -4,6 +4,7 @@ export interface JwtPayload {
   email: string;
   sub: number; // user ID
   name: string;
+  role: string;
   iat?: number; // issued at
   exp?: number; // expiration
 }
@@ -14,6 +15,7 @@ export interface UserResponse {
   name: string;
   phone: string;
   photoUrl?: string;
+  role: string;
 }
 
 export interface LoginResponse {
@@ -27,6 +29,7 @@ export interface ValidatedUser {
   name: string;
   phone: string;
   photoUrl?: string;
+  role: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,5 +38,5 @@ export interface JwtUser {
   userId: number;
   email: string;
   name: string;
+  role: string;
 }
-

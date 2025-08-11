@@ -14,6 +14,9 @@ import {
 } from '@nestjs/common';
 import { PackagesService } from './packages.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
 import type {
   CreatePackageDto,
   UpdatePackageDto,
@@ -39,6 +42,8 @@ import type {
 } from './packages.dto';
 
 @Controller('packages')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage packages
 @UseInterceptors(ClassSerializerInterceptor)
 export class PackagesController {
   constructor(private readonly packagesService: PackagesService) {}
@@ -94,6 +99,8 @@ export class PackagesController {
 }
 
 @Controller('slots')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage slots
 export class SlotsController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -136,6 +143,8 @@ export class SlotsController {
 }
 
 @Controller('package-fares')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage package fares
 export class PackageFaresController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -196,6 +205,8 @@ export class PackageFaresController {
 }
 
 @Controller('installment-plans')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage installment plans
 export class InstallmentPlansController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -243,6 +254,8 @@ export class InstallmentPlansController {
 }
 
 @Controller('adult-installment-values')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage adult installment values
 export class AdultInstallmentValuesController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -296,6 +309,8 @@ export class AdultInstallmentValuesController {
 }
 
 @Controller('child-installment-values')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage child installment values
 export class ChildInstallmentValuesController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -349,6 +364,8 @@ export class ChildInstallmentValuesController {
 }
 
 @Controller('infant-installment-values')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage infant installment values
 export class InfantInstallmentValuesController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -402,6 +419,8 @@ export class InfantInstallmentValuesController {
 }
 
 @Controller('adult-addons')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage adult addons
 export class AdultAddonsController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -447,6 +466,8 @@ export class AdultAddonsController {
 }
 
 @Controller('child-addons')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage child addons
 export class ChildAddonsController {
   constructor(private readonly packagesService: PackagesService) {}
 
@@ -492,6 +513,8 @@ export class ChildAddonsController {
 }
 
 @Controller('infant-addons')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SUPER_ADMIN, Role.ADMIN) // Only admins and super admins can manage infant addons
 export class InfantAddonsController {
   constructor(private readonly packagesService: PackagesService) {}
 

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Booking } from '../bookings/entities/booking.entity';
+import { Role } from '../common/enums/role.enum';
 
 @Entity('users')
 export class User {
@@ -29,6 +30,13 @@ export class User {
 
   @Column({ nullable: true })
   photoUrl: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.ADMIN,
+  })
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;
