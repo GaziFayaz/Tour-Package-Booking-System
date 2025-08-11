@@ -95,6 +95,18 @@ export class BookingService {
     // Calculate total amount based on passengers and their addons
     let totalAmount = 0;
     let totalAddonAmount = 0;
+
+    // Fetch all addons for this package-slot
+    const adultAddons = await this.adultAddonRepository.find({
+      where: { packageId, slotId },
+    });
+    const childAddons = await this.childAddonRepository.find({
+      where: { packageId, slotId },
+    });
+    const infantAddons = await this.infantAddonRepository.find({
+      where: { packageId, slotId },
+    });
+
     for (const passenger of passengers) {
       // Add base fare based on passenger type
       switch (passenger.type) {
@@ -111,11 +123,7 @@ export class BookingService {
 
       // Add addon costs - assuming addonIds represent addon types
       if (passenger.adultAddonIds && passenger.adultAddonIds.length > 0) {
-        // Get all adult addons for this package-slot and sum their fares
-        // Since there might be multiple addon types, we'll assume all are selected for now
-        const adultAddons = await this.adultAddonRepository.find({
-          where: { packageId, slotId },
-        });
+
         const adultAddonTotal = adultAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
@@ -125,9 +133,6 @@ export class BookingService {
       }
 
       if (passenger.childAddonIds && passenger.childAddonIds.length > 0) {
-        const childAddons = await this.childAddonRepository.find({
-          where: { packageId, slotId },
-        });
         const childAddonTotal = childAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
@@ -137,9 +142,6 @@ export class BookingService {
       }
 
       if (passenger.infantAddonIds && passenger.infantAddonIds.length > 0) {
-        const infantAddons = await this.infantAddonRepository.find({
-          where: { packageId, slotId },
-        });
         const infantAddonTotal = infantAddons.reduce(
           (sum, addon) => sum + Number(addon.fare),
           0,
