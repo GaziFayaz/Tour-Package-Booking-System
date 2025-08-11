@@ -56,6 +56,35 @@ export class BookingService {
     private infantInstallmentValueRepository: Repository<InfantInstallmentValue>,
   ) {}
 
+  /**
+   * Validates selected addons and calculates their total cost
+   */
+  private validateAndCalculateAddonCost(
+    selectedAddonIds: number[] | undefined,
+    availableAddons: any[],
+    addonType: string,
+  ): number {
+    if (!selectedAddonIds || selectedAddonIds.length === 0) {
+      return 0;
+    }
+
+    // Validate that all selected addons exist
+    const invalidAddons = selectedAddonIds.filter(
+      (id) => !availableAddons.some((addon) => addon.id === id),
+    );
+    if (invalidAddons.length > 0) {
+      throw new BadRequestException(
+        `Selected ${addonType} addons do not exist: ${invalidAddons.join(', ')}`,
+      );
+    }
+
+    // Calculate total cost for selected addons
+    const selectedAddons = availableAddons.filter((addon) =>
+      selectedAddonIds.includes(addon.id),
+    );
+    return selectedAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
+  }
+
   async createBooking(createBookingDto: CreateBookingDto): Promise<Booking> {
     const {
       packageId,
@@ -121,42 +150,30 @@ export class BookingService {
           break;
       }
 
-      // Add addon costs - only for specifically selected addons
-      if (passenger.adultAddonIds && passenger.adultAddonIds.length > 0) {
-        const selectedAdultAddons = adultAddons.filter((addon) =>
-          passenger.adultAddonIds?.includes(addon.id),
-        );
-        const adultAddonTotal = selectedAdultAddons.reduce(
-          (sum, addon) => sum + Number(addon.fare),
-          0,
-        );
-        totalAmount += adultAddonTotal;
-        totalAddonAmount += adultAddonTotal;
-      }
+      // Add addon costs
+      const adultAddonCost = this.validateAndCalculateAddonCost(
+        passenger.adultAddonIds,
+        adultAddons,
+        'adult',
+      );
+      totalAmount += adultAddonCost;
+      totalAddonAmount += adultAddonCost;
 
-      if (passenger.childAddonIds && passenger.childAddonIds.length > 0) {
-        const selectedChildAddons = childAddons.filter((addon) =>
-          passenger.childAddonIds?.includes(addon.id),
-        );
-        const childAddonTotal = selectedChildAddons.reduce(
-          (sum, addon) => sum + Number(addon.fare),
-          0,
-        );
-        totalAmount += childAddonTotal;
-        totalAddonAmount += childAddonTotal;
-      }
+      const childAddonCost = this.validateAndCalculateAddonCost(
+        passenger.childAddonIds,
+        childAddons,
+        'child',
+      );
+      totalAmount += childAddonCost;
+      totalAddonAmount += childAddonCost;
 
-      if (passenger.infantAddonIds && passenger.infantAddonIds.length > 0) {
-        const selectedInfantAddons = infantAddons.filter((addon) =>
-          passenger.infantAddonIds?.includes(addon.id),
-        );
-        const infantAddonTotal = selectedInfantAddons.reduce(
-          (sum, addon) => sum + Number(addon.fare),
-          0,
-        );
-        totalAmount += infantAddonTotal;
-        totalAddonAmount += infantAddonTotal;
-      }
+      const infantAddonCost = this.validateAndCalculateAddonCost(
+        passenger.infantAddonIds,
+        infantAddons,
+        'infant',
+      );
+      totalAmount += infantAddonCost;
+      totalAddonAmount += infantAddonCost;
     }
 
     // Handle concern person - check if exists by email or phone
