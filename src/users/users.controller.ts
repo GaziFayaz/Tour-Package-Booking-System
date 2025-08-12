@@ -23,17 +23,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '../common/enums/role.enum';
-import { FileValidationService } from '../files/file-validation.service';
 import type { JwtUser } from '../auth/strategies/jwt.strategy';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly fileValidationService: FileValidationService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @Roles(Role.SUPER_ADMIN) // Only super admins can create users with roles
@@ -104,12 +100,27 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
   @Roles(Role.SUPER_ADMIN) // Only super admins can update users (including role changes)
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
+    }),
+  )
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @GetUser() currentUser: JwtUser,
+    @UploadedFile() photo?: Express.Multer.File,
   ): Promise<User> {
     try {
       const fullCurrentUser = await this.usersService.findOne(
@@ -119,6 +130,7 @@ export class UsersController {
         +id,
         updateUserDto,
         fullCurrentUser,
+        photo,
       );
     } catch (error) {
       throw new HttpException(
@@ -138,74 +150,6 @@ export class UsersController {
       throw new HttpException(
         error.message || 'Failed to delete user',
         HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
-  @Post(':id/photo')
-  @UseInterceptors(FileInterceptor('photo'))
-  async uploadPhoto(
-    @Param('id') id: string,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|webp)$/,
-        })
-        .addMaxSizeValidator({
-          maxSize: 5 * 1024 * 1024, // 5MB
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-    @GetUser() currentUser: JwtUser,
-  ): Promise<{ message: string; user: User }> {
-    try {
-      this.fileValidationService.validateImageFile(file);
-
-      const fullCurrentUser = await this.usersService.findOne(
-        currentUser.userId,
-      );
-
-      const user = await this.usersService.updatePhoto(
-        +id,
-        file,
-        fullCurrentUser,
-      );
-
-      return {
-        message: 'Photo uploaded successfully',
-        user,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to upload photo',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @Delete(':id/photo')
-  async removePhoto(
-    @Param('id') id: string,
-    @GetUser() currentUser: JwtUser,
-  ): Promise<{ message: string; user: User }> {
-    try {
-      const fullCurrentUser = await this.usersService.findOne(
-        currentUser.userId,
-      );
-
-      const user = await this.usersService.removePhoto(+id, fullCurrentUser);
-
-      return {
-        message: 'Photo removed successfully',
-        user,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to remove photo',
-        HttpStatus.BAD_REQUEST,
       );
     }
   }

@@ -70,13 +70,4 @@ export class AuthService {
   async findUserById(id: number) {
     return this.usersService.findOne(id);
   }
-
-  async createUser(
-    createUserDto: CreateUserDto,
-    currentUser: any,
-  ): Promise<LoginResponse> {
-    const user = await this.usersService.create(createUserDto, currentUser);
-    const { password, ...result } = user;
-    return this.login(result);
-  }
 }

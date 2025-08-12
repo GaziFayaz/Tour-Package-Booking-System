@@ -11,19 +11,34 @@ export interface CloudinaryResponse {
   resource_type: string;
 }
 
+export enum CloudinaryFolders {
+  USER_PHOTOS = 'users',
+  // PACKAGE_IMAGES = 'packages',
+  // BOOKING_DOCUMENTS = 'bookings',
+  // GENERAL_ASSETS = 'assets',
+}
+
 @Injectable()
 export class CloudinaryService {
-  constructor(private configService: ConfigService) {}
+  private readonly baseFolder: string;
+
+  constructor(private configService: ConfigService) {
+    this.baseFolder = this.configService.get(
+      'CLOUDINARY_FOLDER',
+      'tour-management-system',
+    );
+  }
 
   async uploadImage(
     file: Express.Multer.File,
-    folder?: string,
+    folderType: CloudinaryFolders,
     publicId?: string,
   ): Promise<CloudinaryResponse> {
     try {
+      const fullFolderPath = `${this.baseFolder}/${folderType}`;
+
       const uploadOptions: any = {
-        folder:
-          folder || this.configService.get('CLOUDINARY_FOLDER', 'uploads'),
+        folder: fullFolderPath,
         resource_type: 'image',
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
         transformation: [
@@ -33,7 +48,7 @@ export class CloudinaryService {
       };
 
       if (publicId) {
-        uploadOptions.public_id = publicId;
+        uploadOptions.public_id = `${fullFolderPath}/${publicId}`;
         uploadOptions.overwrite = true;
       }
 
@@ -72,5 +87,10 @@ export class CloudinaryService {
     } catch {
       return null;
     }
+  }
+
+  // Helper method to get full folder path
+  getFullFolderPath(folderType: CloudinaryFolders): string {
+    return `${this.baseFolder}/${folderType}`;
   }
 }

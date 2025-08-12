@@ -1,0 +1,69 @@
+{
+  "id": "users-api-environment",
+  "name": "Users API - Development",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "default",
+      "enabled": true,
+      "description": "Base URL for the API server"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true,
+      "description": "JWT access token from authentication"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "default",
+      "enabled": true,
+      "description": "User ID for testing operations"
+    },
+    {
+      "key": "userEmail",
+      "value": "admin@example.com",
+      "type": "default",
+      "enabled": true,
+      "description": "User email for search operations"
+    },
+    {
+      "key": "testUserName",
+      "value": "John Doe",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user name for creation"
+    },
+    {
+      "key": "testUserEmail",
+      "value": "john.doe@example.com",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user email for creation"
+    },
+    {
+      "key": "testUserPassword",
+      "value": "password123",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user password for creation"
+    },
+    {
+      "key": "testUserPhone",
+      "value": "+1234567890",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user phone for creation"
+    },
+    {
+      "key": "testUserRole",
+      "value": "ADMIN",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user role (ADMIN or SUPER_ADMIN)"
+    }
+  ]
+}

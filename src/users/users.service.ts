@@ -10,8 +10,13 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { Role } from '../common/enums/role.enum';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import {
+  CloudinaryService,
+  CloudinaryFolders,
+} from '../cloudinary/cloudinary.service';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
+import type { JwtUser } from '../auth/strategies/jwt.strategy';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +24,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private cloudinaryService: CloudinaryService,
+    private configService: ConfigService,
   ) {}
 
   async create(
@@ -65,7 +71,7 @@ export class UsersService {
         // Upload to Cloudinary first
         const uploadResult = await this.cloudinaryService.uploadImage(
           photo,
-          'user-photos',
+          CloudinaryFolders.USER_PHOTOS,
         );
 
         photoUrl = uploadResult.secure_url;
@@ -120,7 +126,7 @@ export class UsersService {
     }
 
     // Check file size (5MB default)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = this.configService.get('MAX_FILE_SIZE', 5242880);
     if (file.size > maxSize) {
       throw new BadRequestException(
         `Photo file too large. Maximum size is ${maxSize / 1024 / 1024}MB`,
@@ -171,34 +177,114 @@ export class UsersService {
     id: number,
     updateUserDto: UpdateUserDto,
     currentUser?: User,
+    photo?: Express.Multer.File,
   ): Promise<User> {
-    const userToUpdate = await this.findOne(id);
+    let uploadedPhotoPublicId: string | null = null;
+    let previousPhotoPublicId: string | null = null;
 
-    // Role validation - only super admins can change roles
-    if (updateUserDto.role && updateUserDto.role !== userToUpdate.role) {
-      if (!currentUser || currentUser.role !== Role.SUPER_ADMIN) {
-        throw new ForbiddenException('Only super admins can change user roles');
+    try {
+      const userToUpdate = await this.findOne(id);
+
+      // Store previous photo for potential rollback
+      previousPhotoPublicId = userToUpdate.photoPublicId;
+
+      // Role validation - only super admins can change roles
+      if (updateUserDto.role && updateUserDto.role !== userToUpdate.role) {
+        if (!currentUser || currentUser.role !== Role.SUPER_ADMIN) {
+          throw new ForbiddenException(
+            'Only super admins can change user roles',
+          );
+        }
+
+        // Prevent self-demotion of the last super admin
+        if (
+          userToUpdate.role === Role.SUPER_ADMIN &&
+          updateUserDto.role !== Role.SUPER_ADMIN
+        ) {
+          const superAdminCount = await this.usersRepository.count({
+            where: { role: Role.SUPER_ADMIN },
+          });
+
+          if (superAdminCount <= 1) {
+            throw new ForbiddenException(
+              'Cannot remove the role of the last super admin',
+            );
+          }
+        }
       }
 
-      // Prevent self-demotion of the last super admin
-      if (
-        userToUpdate.role === Role.SUPER_ADMIN &&
-        updateUserDto.role !== Role.SUPER_ADMIN
-      ) {
-        const superAdminCount = await this.usersRepository.count({
-          where: { role: Role.SUPER_ADMIN },
-        });
+      // Handle photo update if provided
+      let photoUrl: string | null =
+        updateUserDto.photoUrl || userToUpdate.photoUrl;
+      let photoPublicId: string | null = userToUpdate.photoPublicId;
 
-        if (superAdminCount <= 1) {
-          throw new ForbiddenException(
-            'Cannot remove the role of the last super admin',
+      if (photo) {
+        // Validate the photo file
+        this.validatePhotoFile(photo);
+
+        // Upload new photo to Cloudinary first
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          photo,
+          CloudinaryFolders.USER_PHOTOS,
+          `user-${id}`,
+        );
+
+        photoUrl = uploadResult.secure_url;
+        photoPublicId = uploadResult.public_id;
+        uploadedPhotoPublicId = photoPublicId; // Store for potential rollback
+      }
+
+      // Prepare update data
+      const updateData: any = {
+        ...updateUserDto,
+      };
+
+      // Add photo data if photo was uploaded
+      if (photo) {
+        updateData.photoUrl = photoUrl;
+        updateData.photoPublicId = photoPublicId;
+      }
+
+      // Perform database update
+      await this.usersRepository.update(id, updateData);
+
+      // Database operation succeeded - now safely delete the previous photo
+      if (
+        photo &&
+        previousPhotoPublicId &&
+        previousPhotoPublicId !== photoPublicId
+      ) {
+        try {
+          await this.cloudinaryService.deleteImage(previousPhotoPublicId);
+        } catch (deleteError) {
+          // Log error but don't fail the operation since database update succeeded
+          console.error(
+            `Failed to delete previous photo ${previousPhotoPublicId} for user ${id}:`,
+            deleteError,
           );
         }
       }
-    }
 
-    await this.usersRepository.update(id, updateUserDto);
-    return this.findOne(id);
+      // Reset uploadedPhotoPublicId since operation succeeded
+      uploadedPhotoPublicId = null;
+
+      return this.findOne(id);
+    } catch (error) {
+      // Rollback: Delete newly uploaded photo if database operation failed
+      if (uploadedPhotoPublicId) {
+        try {
+          await this.cloudinaryService.deleteImage(uploadedPhotoPublicId);
+        } catch (deleteError) {
+          console.error(
+            'Failed to rollback newly uploaded photo:',
+            deleteError,
+          );
+        }
+      }
+
+      // Re-throw the original error
+      throw error;
+    }
   }
 
   async remove(id: number): Promise<void> {
@@ -213,68 +299,5 @@ export class UsersService {
     if (result.affected === 0) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-  }
-
-  async updatePhoto(
-    id: number,
-    file: Express.Multer.File,
-    currentUser?: User,
-  ): Promise<User> {
-    const user = await this.findOne(id);
-
-    // Only allow users to update their own photo or admins to update any photo
-    if (
-      currentUser &&
-      currentUser.id !== id &&
-      currentUser.role !== Role.SUPER_ADMIN
-    ) {
-      throw new ForbiddenException('You can only update your own photo');
-    }
-
-    // Delete old photo if exists
-    if (user.photoPublicId) {
-      await this.cloudinaryService.deleteImage(user.photoPublicId);
-    }
-
-    // Upload new photo
-    const uploadResult = await this.cloudinaryService.uploadImage(
-      file,
-      'user-photos',
-      `user-${id}`,
-    );
-
-    // Update user with new photo data
-    await this.usersRepository.update(id, {
-      photoUrl: uploadResult.secure_url,
-      photoPublicId: uploadResult.public_id,
-    });
-
-    return this.findOne(id);
-  }
-
-  async removePhoto(id: number, currentUser?: User): Promise<User> {
-    const user = await this.findOne(id);
-
-    // Only allow users to remove their own photo or admins to remove any photo
-    if (
-      currentUser &&
-      currentUser.id !== id &&
-      currentUser.role !== Role.SUPER_ADMIN
-    ) {
-      throw new ForbiddenException('You can only remove your own photo');
-    }
-
-    // Delete photo from Cloudinary
-    if (user.photoPublicId) {
-      await this.cloudinaryService.deleteImage(user.photoPublicId);
-    }
-
-    // Update user to remove photo data
-    await this.usersRepository.update(id, {
-      photoUrl: undefined,
-      photoPublicId: undefined,
-    });
-
-    return this.findOne(id);
   }
 }

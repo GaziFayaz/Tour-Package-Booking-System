@@ -33,17 +33,4 @@ export class AuthController {
   getProfile(@GetUser() user: JwtUser): JwtUser {
     return user;
   }
-
-  @Post('create-user')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SUPER_ADMIN) // Only super admins can create users
-  async createUser(
-    @Body() createUserDto: CreateUserDto,
-    @GetUser() currentUser: JwtUser,
-  ): Promise<LoginResponse> {
-    const fullCurrentUser = await this.authService.findUserById(
-      currentUser.userId,
-    );
-    return this.authService.createUser(createUserDto, fullCurrentUser);
-  }
 }
