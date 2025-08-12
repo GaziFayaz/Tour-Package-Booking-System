@@ -33,7 +33,6 @@ export class BookingController {
     @Body() createBookingDto: CreateBookingDto,
     @GetUser() user: JwtUser, // Get the user making the booking
   ): Promise<Booking> {
-    console.log(user)
     return this.bookingService.createBooking(createBookingDto, user);
   }
 
