@@ -1,0 +1,1531 @@
+{
+  "info": {
+    "_postman_id": "packages-api-collection",
+    "name": "Packages API",
+    "description": "Complete API endpoints for the Tour Package Management System including packages, slots, fares, installments, and addons",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "packages-api"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set content type for all requests",
+          "pm.request.headers.add({",
+          "    key: 'Content-Type',",
+          "    value: 'application/json'",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test for all endpoints",
+          "pm.test('Response time is less than 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "pm.test('Response should be JSON', function () {",
+          "    pm.response.to.have.header('Content-Type');",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('json');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Packages",
+      "item": [
+        {
+          "name": "Create Package",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has package properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('createdAt');",
+                  "    pm.expect(responseJson).to.have.property('updatedAt');",
+                  "});",
+                  "",
+                  "// Store created package ID for subsequent requests",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.id) {",
+                  "        pm.environment.set('packageId', responseJson.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Deluxe Beach Resort Package\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages"]
+            },
+            "description": "Create a new travel package"
+          }
+        },
+        {
+          "name": "Get All Packages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages"]
+            },
+            "description": "Retrieve all packages with their relationships"
+          }
+        },
+        {
+          "name": "Get Package by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has package details', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('fares');",
+                  "    pm.expect(responseJson).to.have.property('adultAddons');",
+                  "    pm.expect(responseJson).to.have.property('childAddons');",
+                  "    pm.expect(responseJson).to.have.property('infantAddons');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/{{packageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "{{packageId}}"]
+            },
+            "description": "Retrieve a specific package by ID with all relationships"
+          }
+        },
+        {
+          "name": "Update Package",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Package was updated', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson.name).to.equal('Updated Deluxe Beach Resort Package');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Deluxe Beach Resort Package\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/packages/{{packageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "{{packageId}}"]
+            },
+            "description": "Update an existing package"
+          }
+        },
+        {
+          "name": "Get Package Pricing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has pricing structure', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('packageId');",
+                  "    pm.expect(responseJson).to.have.property('slotId');",
+                  "    pm.expect(responseJson).to.have.property('fares');",
+                  "    pm.expect(responseJson).to.have.property('installments');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/{{packageId}}/slots/{{slotId}}/pricing",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "{{packageId}}", "slots", "{{slotId}}", "pricing"]
+            },
+            "description": "Get comprehensive pricing information for a package and slot combination"
+          }
+        },
+        {
+          "name": "Delete Package",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/packages/{{packageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["packages", "{{packageId}}"]
+            },
+            "description": "Delete a package (use with caution)"
+          }
+        }
+      ],
+      "description": "Package management endpoints"
+    },
+    {
+      "name": "Slots",
+      "item": [
+        {
+          "name": "Create Slot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has slot properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('seatCount');",
+                  "    pm.expect(responseJson).to.have.property('startDate');",
+                  "    pm.expect(responseJson).to.have.property('endDate');",
+                  "});",
+                  "",
+                  "// Store created slot ID",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.id) {",
+                  "        pm.environment.set('slotId', responseJson.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer 2025 Batch\",\n  \"seatCount\": 50,\n  \"startDate\": \"2025-06-01T00:00:00.000Z\",\n  \"endDate\": \"2025-08-31T23:59:59.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            },
+            "description": "Create a new time slot for packages"
+          }
+        },
+        {
+          "name": "Get All Slots",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            },
+            "description": "Retrieve all available slots"
+          }
+        },
+        {
+          "name": "Get Slot by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has slot details', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('seatCount');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots/{{slotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "{{slotId}}"]
+            },
+            "description": "Retrieve a specific slot by ID"
+          }
+        },
+        {
+          "name": "Update Slot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Slot was updated', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('seatCount');",
+                  "    pm.expect(responseJson.seatCount).to.equal(60);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seatCount\": 60\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slots/{{slotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "{{slotId}}"]
+            },
+            "description": "Update an existing slot"
+          }
+        },
+        {
+          "name": "Delete Slot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots/{{slotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "{{slotId}}"]
+            },
+            "description": "Delete a slot"
+          }
+        }
+      ],
+      "description": "Slot management endpoints"
+    },
+    {
+      "name": "Package Fares",
+      "item": [
+        {
+          "name": "Create Package Fare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has fare properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('packageId');",
+                  "    pm.expect(responseJson).to.have.property('slotId');",
+                  "    pm.expect(responseJson).to.have.property('adultFare');",
+                  "    pm.expect(responseJson).to.have.property('childFare');",
+                  "    pm.expect(responseJson).to.have.property('infantFare');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": {{packageId}},\n  \"slotId\": {{slotId}},\n  \"adultFare\": 50000,\n  \"childFare\": 35000,\n  \"infantFare\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/package-fares",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares"]
+            },
+            "description": "Create fare structure for a package-slot combination"
+          }
+        },
+        {
+          "name": "Get All Package Fares",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares"]
+            },
+            "description": "Retrieve all package fares"
+          }
+        },
+        {
+          "name": "Get Package Fare by Package and Slot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has fare details', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('packageId');",
+                  "    pm.expect(responseJson).to.have.property('slotId');",
+                  "    pm.expect(responseJson).to.have.property('adultFare');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/{{packageFarePackageId}}/{{packageFareSlotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "{{packageFarePackageId}}", "{{packageFareSlotId}}"]
+            },
+            "description": "Retrieve fare for specific package-slot combination"
+          }
+        },
+        {
+          "name": "Update Package Fare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Fare was updated', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('adultFare');",
+                  "    pm.expect(responseJson.adultFare).to.equal(55000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adultFare\": 55000,\n  \"childFare\": 38000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/{{packageFarePackageId}}/{{packageFareSlotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "{{packageFarePackageId}}", "{{packageFareSlotId}}"]
+            },
+            "description": "Update fare for specific package-slot combination"
+          }
+        },
+        {
+          "name": "Delete Package Fare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/package-fares/{{packageFarePackageId}}/{{packageFareSlotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["package-fares", "{{packageFarePackageId}}", "{{packageFareSlotId}}"]
+            },
+            "description": "Delete fare for specific package-slot combination"
+          }
+        }
+      ],
+      "description": "Package fare management endpoints"
+    },
+    {
+      "name": "Installment Plans",
+      "item": [
+        {
+          "name": "Create Installment Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has installment plan properties', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('packageId');",
+                  "    pm.expect(responseJson).to.have.property('slotId');",
+                  "    pm.expect(responseJson).to.have.property('firstInstallmentDays');",
+                  "    pm.expect(responseJson).to.have.property('secondInstallmentDays');",
+                  "    pm.expect(responseJson).to.have.property('thirdInstallmentDays');",
+                  "});",
+                  "",
+                  "// Store created installment plan ID",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.id) {",
+                  "        pm.environment.set('installmentPlanId', responseJson.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageId\": {{packageId}},\n  \"slotId\": {{slotId}},\n  \"firstInstallmentDays\": 0,\n  \"secondInstallmentDays\": 30,\n  \"thirdInstallmentDays\": 60\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/installment-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["installment-plans"]
+            },
+            "description": "Create an installment plan for a package-slot combination"
+          }
+        },
+        {
+          "name": "Get All Installment Plans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/installment-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["installment-plans"]
+            },
+            "description": "Retrieve all installment plans"
+          }
+        },
+        {
+          "name": "Get Installment Plan by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has installment plan details', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('packageId');",
+                  "    pm.expect(responseJson).to.have.property('slotId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/installment-plans/{{installmentPlanId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["installment-plans", "{{installmentPlanId}}"]
+            },
+            "description": "Retrieve a specific installment plan by ID"
+          }
+        },
+        {
+          "name": "Update Installment Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Installment plan was updated', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('secondInstallmentDays');",
+                  "    pm.expect(responseJson.secondInstallmentDays).to.equal(45);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"secondInstallmentDays\": 45,\n  \"thirdInstallmentDays\": 90\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/installment-plans/{{installmentPlanId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["installment-plans", "{{installmentPlanId}}"]
+            },
+            "description": "Update an existing installment plan"
+          }
+        },
+        {
+          "name": "Delete Installment Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/installment-plans/{{installmentPlanId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["installment-plans", "{{installmentPlanId}}"]
+            },
+            "description": "Delete an installment plan"
+          }
+        }
+      ],
+      "description": "Installment plan management endpoints"
+    },
+    {
+      "name": "Installment Values",
+      "item": [
+        {
+          "name": "Adult Installment Values",
+          "item": [
+            {
+              "name": "Create Adult Installment Value",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test('Response has adult installment value properties', function () {",
+                      "    const responseJson = pm.response.json();",
+                      "    pm.expect(responseJson).to.have.property('id');",
+                      "    pm.expect(responseJson).to.have.property('installmentPlanId');",
+                      "    pm.expect(responseJson).to.have.property('firstInstallmentAmount');",
+                      "    pm.expect(responseJson).to.have.property('secondInstallmentAmount');",
+                      "    pm.expect(responseJson).to.have.property('thirdInstallmentAmount');",
+                      "});",
+                      "",
+                      "// Store created adult installment value ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('adultInstallmentValueId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"installmentPlanId\": {{installmentPlanId}},\n  \"firstInstallmentAmount\": 20000,\n  \"secondInstallmentAmount\": 15000,\n  \"thirdInstallmentAmount\": 15000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/adult-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-installment-values"]
+                },
+                "description": "Create adult installment value amounts"
+              }
+            },
+            {
+              "name": "Get All Adult Installment Values",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response is an array', function () {",
+                      "    const responseJson = pm.response.json();",
+                      "    pm.expect(responseJson).to.be.an('array');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-installment-values"]
+                },
+                "description": "Retrieve all adult installment values"
+              }
+            },
+            {
+              "name": "Get Adult Installment Value by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-installment-values/{{adultInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-installment-values", "{{adultInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Adult Installment Value",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstInstallmentAmount\": 25000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/adult-installment-values/{{adultInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-installment-values", "{{adultInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Adult Installment Value",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-installment-values/{{adultInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-installment-values", "{{adultInstallmentValueId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Adult installment value management"
+        },
+        {
+          "name": "Child Installment Values",
+          "item": [
+            {
+              "name": "Create Child Installment Value",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "// Store created child installment value ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('childInstallmentValueId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"installmentPlanId\": {{installmentPlanId}},\n  \"firstInstallmentAmount\": 15000,\n  \"secondInstallmentAmount\": 11000,\n  \"thirdInstallmentAmount\": 12000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/child-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-installment-values"]
+                }
+              }
+            },
+            {
+              "name": "Get All Child Installment Values",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-installment-values"]
+                }
+              }
+            },
+            {
+              "name": "Get Child Installment Value by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-installment-values/{{childInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-installment-values", "{{childInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Child Installment Value",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"secondInstallmentAmount\": 13000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/child-installment-values/{{childInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-installment-values", "{{childInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Child Installment Value",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-installment-values/{{childInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-installment-values", "{{childInstallmentValueId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Child installment value management"
+        },
+        {
+          "name": "Infant Installment Values",
+          "item": [
+            {
+              "name": "Create Infant Installment Value",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "// Store created infant installment value ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('infantInstallmentValueId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"installmentPlanId\": {{installmentPlanId}},\n  \"firstInstallmentAmount\": 4000,\n  \"secondInstallmentAmount\": 3000,\n  \"thirdInstallmentAmount\": 3000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/infant-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-installment-values"]
+                }
+              }
+            },
+            {
+              "name": "Get All Infant Installment Values",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-installment-values",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-installment-values"]
+                }
+              }
+            },
+            {
+              "name": "Get Infant Installment Value by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-installment-values/{{infantInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-installment-values", "{{infantInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Infant Installment Value",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstInstallmentAmount\": 5000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/infant-installment-values/{{infantInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-installment-values", "{{infantInstallmentValueId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Infant Installment Value",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-installment-values/{{infantInstallmentValueId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-installment-values", "{{infantInstallmentValueId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Infant installment value management"
+        }
+      ],
+      "description": "Installment value management for different passenger types"
+    },
+    {
+      "name": "Addons",
+      "item": [
+        {
+          "name": "Adult Addons",
+          "item": [
+            {
+              "name": "Create Adult Addon",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test('Response has adult addon properties', function () {",
+                      "    const responseJson = pm.response.json();",
+                      "    pm.expect(responseJson).to.have.property('id');",
+                      "    pm.expect(responseJson).to.have.property('packageId');",
+                      "    pm.expect(responseJson).to.have.property('slotId');",
+                      "    pm.expect(responseJson).to.have.property('type');",
+                      "    pm.expect(responseJson).to.have.property('fare');",
+                      "});",
+                      "",
+                      "// Store created adult addon ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('adultAddonId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"packageId\": {{packageId}},\n  \"slotId\": {{slotId}},\n  \"type\": \"Airport Transfer\",\n  \"fare\": 5000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/adult-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-addons"]
+                },
+                "description": "Create an adult addon service"
+              }
+            },
+            {
+              "name": "Get All Adult Addons",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-addons"]
+                }
+              }
+            },
+            {
+              "name": "Get Adult Addon by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-addons/{{adultAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-addons", "{{adultAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Adult Addon",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"Premium Airport Transfer\",\n  \"fare\": 7500\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/adult-addons/{{adultAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-addons", "{{adultAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Adult Addon",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/adult-addons/{{adultAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["adult-addons", "{{adultAddonId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Adult addon service management"
+        },
+        {
+          "name": "Child Addons",
+          "item": [
+            {
+              "name": "Create Child Addon",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "// Store created child addon ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('childAddonId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"packageId\": {{packageId}},\n  \"slotId\": {{slotId}},\n  \"type\": \"Kids Entertainment Package\",\n  \"fare\": 2000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/child-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-addons"]
+                }
+              }
+            },
+            {
+              "name": "Get All Child Addons",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-addons"]
+                }
+              }
+            },
+            {
+              "name": "Get Child Addon by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-addons/{{childAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-addons", "{{childAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Child Addon",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fare\": 2500\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/child-addons/{{childAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-addons", "{{childAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Child Addon",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/child-addons/{{childAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["child-addons", "{{childAddonId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Child addon service management"
+        },
+        {
+          "name": "Infant Addons",
+          "item": [
+            {
+              "name": "Create Infant Addon",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "// Store created infant addon ID",
+                      "if (pm.response.code === 201) {",
+                      "    const responseJson = pm.response.json();",
+                      "    if (responseJson.id) {",
+                      "        pm.environment.set('infantAddonId', responseJson.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"packageId\": {{packageId}},\n  \"slotId\": {{slotId}},\n  \"type\": \"Baby Care Package\",\n  \"fare\": 1000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/infant-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-addons"]
+                }
+              }
+            },
+            {
+              "name": "Get All Infant Addons",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-addons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-addons"]
+                }
+              }
+            },
+            {
+              "name": "Get Infant Addon by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-addons/{{infantAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-addons", "{{infantAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Infant Addon",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"Premium Baby Care Package\",\n  \"fare\": 1500\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/infant-addons/{{infantAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-addons", "{{infantAddonId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Infant Addon",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/infant-addons/{{infantAddonId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["infant-addons", "{{infantAddonId}}"]
+                }
+              }
+            }
+          ],
+          "description": "Infant addon service management"
+        }
+      ],
+      "description": "Addon service management for different passenger types"
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "string"
+    }
+  ]
+}

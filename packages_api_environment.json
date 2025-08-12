@@ -1,0 +1,85 @@
+{
+  "id": "packages-api-environment",
+  "name": "Packages API - Development",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "packageId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "slotId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "packageFarePackageId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "packageFareSlotId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "installmentPlanId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "adultInstallmentValueId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "childInstallmentValueId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "infantInstallmentValueId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "adultAddonId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "childAddonId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "infantAddonId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

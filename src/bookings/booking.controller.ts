@@ -18,6 +18,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '../common/enums/role.enum';
+import type { JwtUser } from 'src/auth/strategies/jwt.strategy';
 
 @Controller('bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,8 +31,10 @@ export class BookingController {
   @HttpCode(HttpStatus.CREATED)
   async createBooking(
     @Body() createBookingDto: CreateBookingDto,
+    @GetUser() user: JwtUser, // Get the user making the booking
   ): Promise<Booking> {
-    return this.bookingService.createBooking(createBookingDto);
+    console.log(user)
+    return this.bookingService.createBooking(createBookingDto, user);
   }
 
   @Get(':id')

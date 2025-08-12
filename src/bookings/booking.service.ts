@@ -24,6 +24,7 @@ import {
   ChildInstallmentValue,
   InfantInstallmentValue,
 } from 'src/packages/entities';
+import type { JwtUser } from 'src/auth/strategies/jwt.strategy';
 
 @Injectable()
 export class BookingService {
@@ -85,7 +86,7 @@ export class BookingService {
     return selectedAddons.reduce((sum, addon) => sum + Number(addon.fare), 0);
   }
 
-  async createBooking(createBookingDto: CreateBookingDto): Promise<Booking> {
+  async createBooking(createBookingDto: CreateBookingDto, user: JwtUser): Promise<Booking> {
     // Wrap entire booking creation in a transaction
     return await this.bookingRepository.manager.transaction(async (manager) => {
       const {
@@ -206,6 +207,7 @@ export class BookingService {
       const booking = manager.create(Booking, {
         packageId,
         slotId,
+        userId: user.userId, // Use the authenticated user's ID
         concernPersonId,
         totalAmount,
         totalAddonAmount,
