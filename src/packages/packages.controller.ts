@@ -50,7 +50,6 @@ export class PackagesController {
 
   // =================== PACKAGE ENDPOINTS ===================
   @Post()
-  @UseGuards(JwtAuthGuard)
   createPackage(@Body() createPackageDto: CreatePackageDto) {
     return this.packagesService.createPackage(createPackageDto);
   }
@@ -70,7 +69,6 @@ export class PackagesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   async updatePackage(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePackageDto: UpdatePackageDto,
@@ -83,7 +81,6 @@ export class PackagesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   removePackage(@Param('id', ParseIntPipe) id: number) {
     return this.packagesService.removePackage(id);
   }
